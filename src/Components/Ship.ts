@@ -45,3 +45,5 @@ class Destroyer extends Ship {
     super(2);
   }
 }
+
+export { Ship, Cruiser, Carrier, Battleship, Submarine, Destroyer };

@@ -7,7 +7,7 @@ describe("GameBoard Tests", () => {
     expect(gameBoard.length).toBe(10);
     gameBoard.forEach((row) => {
       expect(row.length).toBe(10);
-      expect(row.every((cell) => cell === null)).toBe(true);
+      expect(row.every((cell) => cell === "Empty")).toBe(true);
     });
   });
 

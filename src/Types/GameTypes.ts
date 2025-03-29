@@ -16,8 +16,13 @@ interface GameBoardInterface {
   placeShip(ship: Ship, coord: Coordinate): void;
 }
 
-type BoardCell = Ship | string | null;
+enum CellState {
+  Empty = "Empty",
+  Miss = "X",
+}
+type BoardCell = Ship | string;
 
 type Coordinate = [number, number];
 
+export { CellState };
 export type { ShipInterface, BoardCell, GameBoardInterface, Coordinate };

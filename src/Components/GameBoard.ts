@@ -1,4 +1,10 @@
-import { BoardCell, GameBoardInterface, Coordinate } from "../Types/GameTypes";
+import {
+  BoardCell,
+  GameBoardInterface,
+  Coordinate,
+  CellState,
+} from "../Types/GameTypes";
+
 import { HelperFunction } from "../Util/Helper";
 import { Ship } from "./Ship";
 
@@ -6,7 +12,9 @@ class GameBoard implements GameBoardInterface {
   private _board: BoardCell[][];
 
   constructor() {
-    this._board = Array.from({ length: 10 }, () => Array(10).fill(null));
+    this._board = Array.from({ length: 10 }, () =>
+      Array(10).fill(CellState.Empty),
+    );
   }
 
   get board(): BoardCell[][] {
@@ -31,14 +39,11 @@ class GameBoard implements GameBoardInterface {
       throw new Error("Invalid Direction Found. Horizontal|Vertical");
     }
 
-    // Validate the coordinates
-    if (!HelperFunction.validateCoordinate(this.board, arrOfCoor)) {
-      throw new Error("Ship Already Exists at given Coordinate ");
-    }
-
-    // Place the ship on the board
-    for (const [a, b] of arrOfCoor) {
-      this.board[a][b] = ship;
+    if (HelperFunction.validateCoordinate(this.board, arrOfCoor)) {
+      // Place the ship on the board
+      for (const [a, b] of arrOfCoor) {
+        this.board[a][b] = ship;
+      }
     }
   }
 

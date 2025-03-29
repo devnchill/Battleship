@@ -1,5 +1,6 @@
 import { GameBoard } from "../src/Components/GameBoard";
 import { Ship } from "../src/Components/Ship";
+import { CellState } from "../src/Types/GameTypes";
 
 describe("GameBoard Tests", () => {
   test("Create A GameBoard (10 x 10) Grid", () => {
@@ -58,6 +59,53 @@ describe("GameBoard Tests", () => {
     gameBoard.placeShip(ship1, [4, 4]);
     expect(() => gameBoard.placeShip(ship2, [4, 5])).toThrow(
       "Invalid Coordinate: Ship already found",
+    );
+  });
+});
+
+describe("GameBoard - receiveAttack method", () => {
+  let gameBoard: GameBoard;
+
+  beforeEach(() => {
+    gameBoard = new GameBoard();
+  });
+
+  test("Attack an empty cell - Miss", () => {
+    const result = gameBoard.recieveAttack([2, 3]);
+    expect(result).toBe("Missed at [2, 3]");
+    expect(gameBoard.board[2][3]).toBe(CellState.Miss);
+  });
+
+  test("Attack a ship - Hit", () => {
+    const ship = new Ship(3);
+    gameBoard.placeShip(ship, [1, 1]);
+
+    const result = gameBoard.recieveAttack([1, 1]);
+    expect(result).toBe("Hit!");
+    expect(ship.health).toBe(2);
+  });
+
+  test("Sinking a ship - Game Over", () => {
+    const ship = new Ship(2);
+    gameBoard.placeShip(ship, [4, 4]);
+
+    gameBoard.recieveAttack([4, 4]);
+    const result = gameBoard.recieveAttack([4, 5]);
+
+    expect(result).toBe("Hit and sunk! - Game Over!");
+    expect(ship.isSunk()).toBe(true);
+  });
+
+  test("Attack the same cell twice", () => {
+    gameBoard.recieveAttack([2, 2]);
+    const result = gameBoard.recieveAttack([2, 2]);
+
+    expect(result).toBe("Already attacked here!");
+  });
+
+  test("Attack out of bounds", () => {
+    expect(() => gameBoard.recieveAttack([11, 11])).toThrow(
+      "Attack out of bounds",
     );
   });
 });

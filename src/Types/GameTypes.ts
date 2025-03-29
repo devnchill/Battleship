@@ -3,9 +3,10 @@ import { Ship } from "../Components/Ship";
 // For Ship Class
 interface ShipInterface {
   hit(): void;
-  health: number;
   isSunk(): boolean;
+  health: number;
   direction: string;
+  length: number;
 }
 
 // For GameBoard Class
@@ -15,4 +16,6 @@ interface GameBoardInterface {
 
 type BoardCell = Ship | null;
 
-export type { ShipInterface, BoardCell, GameBoardInterface };
+type Coordinate = [number, number];
+
+export type { ShipInterface, BoardCell, GameBoardInterface, Coordinate };

@@ -25,8 +25,8 @@ describe("Ship class tests", () => {
     expect(ship.isSunk()).toBe(true);
   });
 
-  test("Create vertical ship", () => {
-    const ship = new Ship(4, "vertical");
-    expect(ship.direction).toBe("vertical");
+  test("Create Vertical ship", () => {
+    const ship = new Ship(4, "Vertical");
+    expect(ship.direction).toBe("Vertical");
   });
 });

@@ -14,6 +14,8 @@ interface ShipInterface {
 interface GameBoardInterface {
   board: BoardCell[][];
   placeShip(ship: Ship, coord: Coordinate): void;
+  allShipsSunk(): boolean;
+  recieveAttack(coord: Coordinate): string;
 }
 
 enum CellState {

@@ -29,4 +29,10 @@ describe("Ship class tests", () => {
     const ship = new Ship(4, "Vertical");
     expect(ship.direction).toBe("Vertical");
   });
+
+  test("Prevent creating ship with invalid direction", () => {
+    expect(() => new Ship(2, "diagonal")).toThrow(
+      "Invalid direction. Must be 'Horizontal' or 'Vertical'",
+    );
+  });
 });

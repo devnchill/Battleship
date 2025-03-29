@@ -9,6 +9,10 @@ class Ship implements ShipInterface {
   constructor(length: number, _direction = "Horizontal") {
     this._length = length;
     this.hitCount = 0;
+    if (_direction !== "Horizontal" && _direction !== "Vertical") {
+      throw new Error("Invalid direction. Must be 'Horizontal' or 'Vertical'");
+    }
+
     this._direction = _direction;
   }
 

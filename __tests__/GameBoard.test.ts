@@ -60,13 +60,4 @@ describe("GameBoard Tests", () => {
       "Invalid Coordinate: Ship already found",
     );
   });
-
-  test("Prevent placing ship with invalid direction", () => {
-    const gameBoard = new GameBoard();
-    const invalidShip = new Ship(2, "diagonal");
-
-    expect(() => gameBoard.placeShip(invalidShip, [0, 0])).toThrow(
-      "Invalid Direction Found. Horizontal|Vertical",
-    );
-  });
 });

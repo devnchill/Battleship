@@ -16,15 +16,15 @@ class GameBoard implements GameBoardInterface {
     const arrOfCoor = [];
     const [x, y] = coord;
     const length = ship.length;
-    if (ship.direction === "horizontal") {
+    if (ship.direction === "Horizontal") {
       for (let index = 0; index < length; index++) {
         arrOfCoor.push([x, y + index]);
       }
-    } else if (ship.direction === "vertical") {
+    } else if (ship.direction === "Vertical") {
       for (let index = 0; index < length; index++) {
         arrOfCoor.push([x + index, y]);
       }
-    } else throw new Error("Invalid Direction Found. horizontal|vertical");
+    } else throw new Error("Invalid Direction Found. Horizontal|Vertical");
 
     for (const [a, b] of arrOfCoor) {
       if (a < 0 || a >= 10 || b < 0 || b >= 10) {
@@ -37,3 +37,5 @@ class GameBoard implements GameBoardInterface {
     }
   }
 }
+
+export { GameBoard };

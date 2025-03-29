@@ -3,17 +3,22 @@ import { ShipInterface } from "../Types/GameTypes";
 class Ship implements ShipInterface {
   //instance variables (unique for each ship object)
   private hitCount: number;
-  private readonly __length__: number;
-  private readonly __direction__: string;
+  private readonly _length: number;
+  private _direction: string;
 
-  constructor(length: number, __direction = "Horizontal") {
-    this.__length__ = length;
+  constructor(length: number, _direction = "Horizontal") {
+    this._length = length;
     this.hitCount = 0;
-    this.__direction__ = __direction;
+    this._direction = _direction;
   }
 
   hit(): void {
     this.hitCount++;
+  }
+
+  maneuver(): string {
+    return (this._direction =
+      this._direction === "Horizontal" ? "Vertical" : "Horizontal");
   }
 
   isSunk(): boolean {
@@ -25,11 +30,11 @@ class Ship implements ShipInterface {
   }
 
   get direction(): string {
-    return this.__direction__;
+    return this._direction;
   }
 
   get length(): number {
-    return this.__length__;
+    return this._length;
   }
 }
 class Carrier extends Ship {

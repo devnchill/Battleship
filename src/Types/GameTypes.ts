@@ -2,19 +2,21 @@ import { Ship } from "../Components/Ship";
 
 // For Ship Class
 interface ShipInterface {
-  hit(): void;
-  isSunk(): boolean;
   health: number;
   direction: string;
   length: number;
+  hit(): void;
+  maneuver(): string;
+  isSunk(): boolean;
 }
 
 // For GameBoard Class
 interface GameBoardInterface {
   board: BoardCell[][];
+  placeShip(ship: Ship, coord: Coordinate): void;
 }
 
-type BoardCell = Ship | null;
+type BoardCell = Ship | string | null;
 
 type Coordinate = [number, number];
 

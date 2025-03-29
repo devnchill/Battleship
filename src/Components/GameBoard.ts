@@ -1,21 +1,24 @@
 import { BoardCell, GameBoardInterface, Coordinate } from "../Types/GameTypes";
+import { HelperFunction } from "../Util/Helper";
 import { Ship } from "./Ship";
 
 class GameBoard implements GameBoardInterface {
-  private __board__: BoardCell[][];
+  private _board: BoardCell[][];
 
   constructor() {
-    this.__board__ = Array.from({ length: 10 }, () => Array(10).fill(null));
+    this._board = Array.from({ length: 10 }, () => Array(10).fill(null));
   }
 
   get board(): BoardCell[][] {
-    return this.__board__;
+    return this._board;
   }
 
   placeShip(ship: Ship, coord: Coordinate): void {
-    const arrOfCoor = [];
+    const arrOfCoor: Coordinate[] = [];
     const [x, y] = coord;
     const length = ship.length;
+
+    // Calculate coordinates based on ship's direction
     if (ship.direction === "Horizontal") {
       for (let index = 0; index < length; index++) {
         arrOfCoor.push([x, y + index]);
@@ -24,17 +27,23 @@ class GameBoard implements GameBoardInterface {
       for (let index = 0; index < length; index++) {
         arrOfCoor.push([x + index, y]);
       }
-    } else throw new Error("Invalid Direction Found. Horizontal|Vertical");
+    } else {
+      throw new Error("Invalid Direction Found. Horizontal|Vertical");
+    }
 
+    // Validate the coordinates
+    if (!HelperFunction.validateCoordinate(this.board, arrOfCoor)) {
+      throw new Error("Ship Already Exists at given Coordinate ");
+    }
+
+    // Place the ship on the board
     for (const [a, b] of arrOfCoor) {
-      if (a < 0 || a >= 10 || b < 0 || b >= 10) {
-        throw new Error("Ship placement out of bounds");
-      }
-      if (this.board[a][b] !== null) {
-        throw new Error("Invalid Coordinate: Ship already found");
-      }
       this.board[a][b] = ship;
     }
+  }
+
+  recieveAttack(): void {
+    // TODO:
   }
 }
 

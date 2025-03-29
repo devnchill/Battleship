@@ -11,6 +11,12 @@ export default tseslint.config([
   tseslint.configs.stylistic,
   eslintConfigPrettier,
   {
+    rules: {
+      "no-undef": "off",
+      "@typescript-eslint/no-var-requires": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+    },
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -22,11 +28,6 @@ export default tseslint.config([
     files: ["webpack.*.js"],
     languageOptions: {
       sourceType: "commonjs",
-    },
-    rules: {
-      "no-undef": "off",
-      "@typescript-eslint/no-var-requires": "off",
-      "@typescript-eslint/no-require-imports": "off",
     },
   },
 ]);

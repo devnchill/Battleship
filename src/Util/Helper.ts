@@ -4,6 +4,14 @@ import {
   Coordinate,
   Direction,
 } from "../Types/GameTypes";
+import {
+  Carrier,
+  Cruiser,
+  Battleship,
+  Submarine,
+  Destroyer,
+} from "../Components/Ship";
+import { Ship } from "../Components/Ship";
 
 class HelperFunction {
   /**
@@ -55,6 +63,22 @@ class HelperFunction {
     return Array.from({ length }, (_, i) =>
       direction === Direction.Horizontal ? [x, y + i] : [x + i, y],
     );
+  }
+
+  static getRandomCoordinate(): Coordinate {
+    const x = Math.floor(Math.random() * 10);
+    const y = Math.floor(Math.random() * 10);
+    return [x, y];
+  }
+
+  static deployShips(): Ship[] {
+    return [
+      new Carrier(),
+      new Destroyer(),
+      new Cruiser(),
+      new Submarine(),
+      new Battleship(),
+    ];
   }
 }
 

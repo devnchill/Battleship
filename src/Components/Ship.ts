@@ -72,4 +72,4 @@ class Destroyer extends Ship {
   }
 }
 
-export { Ship };
+export { Ship, Carrier, Cruiser, Destroyer, Battleship, Submarine };

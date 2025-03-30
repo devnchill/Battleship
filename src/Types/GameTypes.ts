@@ -28,9 +28,14 @@ enum Direction {
   Vertical = "Vertical",
 }
 
+enum Player {
+  Human = "Human",
+  Computer = "Computer",
+}
+
 type BoardCell = Ship | string;
 
 type Coordinate = [number, number];
 
-export { CellState, Direction };
+export { CellState, Direction, Player };
 export type { ShipInterface, BoardCell, GameBoardInterface, Coordinate };

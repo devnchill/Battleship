@@ -20,6 +20,10 @@ class Player {
       return "You’ve already attacked this spot. Try a different Coordinate.";
     }
   }
+
+  get gameBoard(): GameBoardInterface {
+    return this._gameBoard;
+  }
 }
 
 export { Player };

@@ -4,7 +4,7 @@ import { GameBoard } from "./GameBoard";
 class Player {
   private _gameBoard: GameBoardInterface;
   name: string;
-  private previousMoves: Set<string>;
+  protected previousMoves: Set<string>;
   constructor(name: string) {
     this.name = name;
     this._gameBoard = new GameBoard();

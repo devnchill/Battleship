@@ -11,13 +11,15 @@ class Player {
     this.previousMoves = new Set();
   }
 
-  makeMove(coordd: Coordinate, opponentBoard: GameBoardInterface): string {
-    const moveKey = `${coordd[0]},${coordd[1]}`;
+  makeMove(coord: Coordinate, opponentBoard: GameBoardInterface): string {
+    const moveKey = `${coord[0]},${coord[1]}`;
     if (!this.previousMoves.has(moveKey)) {
       this.previousMoves.add(moveKey);
-      return opponentBoard.recieveAttack(coordd);
+      return opponentBoard.recieveAttack(coord);
     } else {
-      return "Move already made.Try Again";
+      return "You’ve already attacked this spot. Try a different Coordinate.";
     }
   }
 }
+
+export { Player };

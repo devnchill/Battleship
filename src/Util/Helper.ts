@@ -1,34 +1,59 @@
-import { BoardCell, CellState, Coordinate } from "../Types/GameTypes";
+import {
+  BoardCell,
+  CellState,
+  Coordinate,
+  Direction,
+} from "../Types/GameTypes";
 
 class HelperFunction {
-  static validateCoordinate(board: BoardCell[][], coor: Coordinate[]): boolean {
-    for (const coordinate of coor) {
-      const [x, y] = coordinate;
-
-      // Check if the coordinates are within bounds
-      if (x < 0 || x >= 10 || y < 0 || y >= 10) {
-        throw new Error("Ship placement out of bounds");
-      }
-
-      // Check if the cell is already occupied by a ship or marked with "X" (hit)
-      if (board[x][y] !== CellState.Empty && board[x][y] !== CellState.Miss) {
-        throw new Error("Invalid Coordinate: Ship already found");
-      }
-    }
-    return true; // Coordinates are valid (it's empty since there is no ship nor previous missed mark at those )
+  /**
+   * Check if coorddinates are out of bounds.
+   */
+  static isOutOfBounds(coord: Coordinate): boolean {
+    const [x, y] = coord;
+    return x < 0 || x >= 10 || y < 0 || y >= 10;
   }
 
+  /**
+   * Check if all coorddinates in the array are empty.
+   */
+  static areCoordinatesEmpty(
+    board: BoardCell[][],
+    coorddinates: Coordinate[],
+  ): boolean {
+    return coorddinates.every(([x, y]) => board[x][y] === CellState.Empty);
+  }
+
+  /**
+   * Check if any of the given coorddinates contain a ship.
+   */
+  static containsShip(
+    board: BoardCell[][],
+    coorddinates: Coordinate[],
+  ): boolean {
+    return coorddinates.some(
+      ([x, y]) =>
+        board[x][y] !== CellState.Empty && board[x][y] !== CellState.Miss,
+    );
+  }
+
+  /**
+   * Generate an array of coorddinates based on the start point, length, and direction.
+   */
   static calculateCoordinates(
     start: Coordinate,
     length: number,
     direction: string,
   ): Coordinate[] {
     const [x, y] = start;
-    if (direction !== "Horizontal" && direction !== "Vertical") {
+    if (
+      direction !== Direction.Horizontal &&
+      direction !== Direction.Vertical
+    ) {
       throw new Error("Invalid direction. Must be 'Horizontal' or 'Vertical'");
     }
     return Array.from({ length }, (_, i) =>
-      direction === "Horizontal" ? [x, y + i] : [x + i, y],
+      direction === Direction.Horizontal ? [x, y + i] : [x + i, y],
     );
   }
 }

@@ -26,48 +26,40 @@ class GameBoard implements GameBoardInterface {
     return this._ships.every((ship) => ship.isSunk());
   }
 
-  placeShip(ship: Ship, coord: Coordinate): void {
-    if (ship.direction !== "Horizontal" && ship.direction !== "Vertical") {
-      throw new Error("Invalid direction. Must be 'Horizontal' or 'Vertical'");
-    }
-    // Calculate coordinates based on ship's direction
-    const coordinates = HelperFunction.calculateCoordinates(
-      coord,
+  placeShip(ship: Ship, coordd: Coordinate): void {
+    const coorddinates = HelperFunction.calculateCoordinates(
+      coordd,
       ship.length,
       ship.direction,
     );
-
-    if (HelperFunction.validateCoordinate(this.board, coordinates)) {
-      for (const [a, b] of coordinates) {
-        this.board[a][b] = ship;
-      }
-      this._ships.push(ship);
+    if (coorddinates.some((c) => HelperFunction.isOutOfBounds(c))) {
+      throw new Error("Ship placement out of bounds");
     }
+    if (!HelperFunction.areCoordinatesEmpty(this._board, coorddinates)) {
+      throw new Error("Invalid Coordinate: Ship already found");
+    }
+    for (const [x, y] of coorddinates) {
+      this._board[x][y] = ship;
+    }
+    this._ships.push(ship);
   }
 
   recieveAttack(coord: Coordinate): string {
-    const [x, y] = coord;
-
-    // Validate bounds
-    if (x < 0 || x >= 10 || y < 0 || y >= 10) {
+    if (HelperFunction.isOutOfBounds(coord)) {
       throw new Error("Attack out of bounds");
     }
-    const cell = this.board[x][y];
-    if (cell === CellState.Empty) {
+    const [x, y] = coord;
+    if (HelperFunction.areCoordinatesEmpty(this.board, [coord])) {
       this.board[x][y] = CellState.Miss;
       return `Missed at [${x}, ${y}]`;
     }
-    if (cell instanceof Ship) {
-      cell.hit();
-      const result = cell.isSunk() ? "Hit and sunk!" : "Hit!";
-
-      // Check for game over after each attack
-      if (this.allShipsSunk()) {
-        return `${result} - Game Over!`;
-      }
-      return result;
+    if (HelperFunction.containsShip(this.board, [coord])) {
+      const ship = this.board[x][y] as Ship; // Cast the cell to Ship
+      ship.hit();
+      const result = ship.isSunk() ? "Hit and sunk!" : "Hit!";
+      return this.allShipsSunk() ? `${result} - Game Over!` : result;
     }
-    return "Already attacked here!";
+    return "Invalid Move";
   }
 }
 

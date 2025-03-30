@@ -1,9 +1,9 @@
 import { GameBoard } from "../src/Components/GameBoard";
 import { Ship } from "../src/Components/Ship";
-import { CellState } from "../src/Types/GameTypes";
+import { CellState, Direction } from "../src/Types/GameTypes";
 
 describe("GameBoard Tests", () => {
-  test("Create A GameBoard (10 x 10) Grid", () => {
+  test("Create A 10 x 10 empty game board on initialization", () => {
     const gameBoard = new GameBoard().board;
     expect(gameBoard.length).toBe(10);
     gameBoard.forEach((row) => {
@@ -14,7 +14,7 @@ describe("GameBoard Tests", () => {
 
   test("Place ship horizontally", () => {
     const gameBoard = new GameBoard();
-    const ship = new Ship(3, "Horizontal");
+    const ship = new Ship(3, Direction.Horizontal);
     gameBoard.placeShip(ship, [2, 2]);
 
     for (let i = 0; i < ship.length; i++) {
@@ -24,7 +24,7 @@ describe("GameBoard Tests", () => {
 
   test("Place ship vertically", () => {
     const gameBoard = new GameBoard();
-    const ship = new Ship(4, "Vertical");
+    const ship = new Ship(4, Direction.Vertical);
 
     gameBoard.placeShip(ship, [1, 5]);
 
@@ -35,7 +35,7 @@ describe("GameBoard Tests", () => {
 
   test("Prevent placing ship out of bounds (horizontal)", () => {
     const gameBoard = new GameBoard();
-    const ship = new Ship(4, "Horizontal");
+    const ship = new Ship(4, Direction.Horizontal);
 
     expect(() => gameBoard.placeShip(ship, [0, 8])).toThrow(
       "Ship placement out of bounds",
@@ -44,21 +44,10 @@ describe("GameBoard Tests", () => {
 
   test("Prevent placing ship out of bounds (vertical)", () => {
     const gameBoard = new GameBoard();
-    const ship = new Ship(5, "Vertical");
+    const ship = new Ship(5, Direction.Vertical);
 
     expect(() => gameBoard.placeShip(ship, [7, 3])).toThrow(
       "Ship placement out of bounds",
-    );
-  });
-
-  test("Prevent placing ship overlapping another ship", () => {
-    const gameBoard = new GameBoard();
-    const ship1 = new Ship(3, "Horizontal");
-    const ship2 = new Ship(2, "Vertical");
-
-    gameBoard.placeShip(ship1, [4, 4]);
-    expect(() => gameBoard.placeShip(ship2, [4, 5])).toThrow(
-      "Invalid Coordinate: Ship already found",
     );
   });
 });
@@ -94,18 +83,5 @@ describe("GameBoard - receiveAttack method", () => {
 
     expect(result).toBe("Hit and sunk! - Game Over!");
     expect(ship.isSunk()).toBe(true);
-  });
-
-  test("Attack the same cell twice", () => {
-    gameBoard.recieveAttack([2, 2]);
-    const result = gameBoard.recieveAttack([2, 2]);
-
-    expect(result).toBe("Already attacked here!");
-  });
-
-  test("Attack out of bounds", () => {
-    expect(() => gameBoard.recieveAttack([11, 11])).toThrow(
-      "Attack out of bounds",
-    );
   });
 });

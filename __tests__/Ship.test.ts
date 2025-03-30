@@ -1,4 +1,5 @@
 import { Ship } from "../src/Components/Ship";
+import { Direction } from "../src/Types/GameTypes";
 
 describe("Ship class tests", () => {
   test("creates a ship with given length", () => {
@@ -25,13 +26,13 @@ describe("Ship class tests", () => {
     expect(ship.isSunk()).toBe(true);
   });
 
-  test("Create Vertical ship", () => {
-    const ship = new Ship(4, "Vertical");
-    expect(ship.direction).toBe("Vertical");
+  test("Create a Vertical ship", () => {
+    const ship = new Ship(4, Direction.Vertical);
+    expect(ship.direction).toBe(Direction.Vertical);
   });
 
-  test("Prevent creating ship with invalid direction", () => {
-    expect(() => new Ship(2, "diagonal")).toThrow(
+  test("Throws error for invalid ship direction", () => {
+    expect(() => new Ship(2, "diagonal" as Direction)).toThrow(
       "Invalid direction. Must be 'Horizontal' or 'Vertical'",
     );
   });

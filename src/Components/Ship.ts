@@ -1,4 +1,4 @@
-import { ShipInterface } from "../Types/GameTypes";
+import { Direction, ShipInterface } from "../Types/GameTypes";
 
 class Ship implements ShipInterface {
   //instance variables (unique for each ship object)
@@ -6,10 +6,13 @@ class Ship implements ShipInterface {
   private readonly _length: number;
   private _direction: string;
 
-  constructor(length: number, _direction = "Horizontal") {
+  constructor(length: number, _direction = Direction.Horizontal) {
     this._length = length;
     this.hitCount = 0;
-    if (_direction !== "Horizontal" && _direction !== "Vertical") {
+    if (
+      _direction !== Direction.Horizontal &&
+      _direction !== Direction.Vertical
+    ) {
       throw new Error("Invalid direction. Must be 'Horizontal' or 'Vertical'");
     }
 
@@ -22,7 +25,9 @@ class Ship implements ShipInterface {
 
   maneuver(): string {
     return (this._direction =
-      this._direction === "Horizontal" ? "Vertical" : "Horizontal");
+      this._direction === Direction.Horizontal
+        ? Direction.Vertical
+        : Direction.Horizontal);
   }
 
   isSunk(): boolean {
@@ -42,27 +47,27 @@ class Ship implements ShipInterface {
   }
 }
 class Carrier extends Ship {
-  constructor(direction = "Horizontal") {
+  constructor(direction = Direction.Horizontal) {
     super(5, direction);
   }
 }
 class Battleship extends Ship {
-  constructor(direction = "Horizontal") {
+  constructor(direction = Direction.Horizontal) {
     super(4, direction);
   }
 }
 class Cruiser extends Ship {
-  constructor(direction = "Horizontal") {
+  constructor(direction = Direction.Horizontal) {
     super(3, direction);
   }
 }
 class Submarine extends Ship {
-  constructor(direction = "Horizontal") {
+  constructor(direction = Direction.Horizontal) {
     super(3, direction);
   }
 }
 class Destroyer extends Ship {
-  constructor(direction = "Horizontal") {
+  constructor(direction = Direction.Horizontal) {
     super(2, direction);
   }
 }

@@ -13,18 +13,24 @@ interface ShipInterface {
 // For GameBoard Class
 interface GameBoardInterface {
   board: BoardCell[][];
-  placeShip(ship: Ship, coord: Coordinate): void;
+  placeShip(ship: Ship, coordd: Coordinate): void;
   allShipsSunk(): boolean;
-  recieveAttack(coord: Coordinate): string;
+  recieveAttack(coordd: Coordinate): string;
 }
 
 enum CellState {
   Empty = "Empty",
   Miss = "X",
 }
+
+enum Direction {
+  Horizontal = "Horizontal",
+  Vertical = "Vertical",
+}
+
 type BoardCell = Ship | string;
 
 type Coordinate = [number, number];
 
-export { CellState };
+export { CellState, Direction };
 export type { ShipInterface, BoardCell, GameBoardInterface, Coordinate };

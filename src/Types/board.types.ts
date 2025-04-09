@@ -1,7 +1,7 @@
 import type { Ship } from "../Components/Ship";
 
 enum CellState {
-  EMPTY,
+  UNTOUCHED,
   MISSED,
   HIT,
 }
@@ -9,6 +9,7 @@ enum CellState {
 interface ICell {
   state: CellState;
   ship?: Ship;
+  hasShip: boolean;
 }
 
 export { CellState };

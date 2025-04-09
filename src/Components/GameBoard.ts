@@ -9,8 +9,10 @@ class GameBoard {
   ships: Set<Ship>;
 
   constructor() {
-    this._board = Array.from({ length: 10 }, () =>
-      Array.from({ length: 10 }, () => ({
+    const BOARD_ROWS = 10;
+    const BOARD_COLUMNS = 10;
+    this._board = Array.from({ length: BOARD_ROWS }, () =>
+      Array.from({ length: BOARD_COLUMNS }, () => ({
         state: CellState.UNTOUCHED,
         hasShip: false,
       })),
@@ -18,11 +20,11 @@ class GameBoard {
     this.ships = new Set();
   }
 
-  isAllShipsSunk() {
+  areAllShipsSunk() {
     return [...this.ships].every((ship) => ship.isSunk());
   }
 
-  get getBoard() {
+  get board() {
     return this._board;
   }
 
@@ -31,41 +33,36 @@ class GameBoard {
     const lengthOfShip = ship.health;
     const orientation = ship.orientation;
     const arrOfCoor: Coordinates[] = [];
+    let count = 0;
     if (orientation == Direction.HORIZONTAL) {
-      let count = 0;
       while (count < lengthOfShip) {
         arrOfCoor.push([x, y + count]);
         count++;
       }
     } else {
-      let count = 0;
       while (count < lengthOfShip) {
         arrOfCoor.push([x + count, y]);
         count++;
       }
     }
-    const board = this.getBoard;
+    const board = this.board;
     for (const c of arrOfCoor) {
       const [a, b] = c;
       board[a][b].ship = ship;
-      board[a][b].state = CellState.UNTOUCHED;
       board[a][b].hasShip = true;
     }
+    this.ships.add(ship);
   }
 
-  recieveAttack(coor: Coordinates) {
+  receiveAttack(coor: Coordinates) {
     const board = this._board;
     const [x, y] = coor;
     if (board[x][y].state == CellState.UNTOUCHED)
       board[x][y].state = CellState.MISSED;
-    if (board[x][y].ship) {
+    if (board[x][y].hasShip && board[x][y].ship) {
       board[x][y].state = CellState.HIT;
       const ship = board[x][y].ship;
       ship.hit();
-      if (ship.isSunk()) {
-        //TODO: handle this case nicely later
-        return;
-      }
     }
   }
 }

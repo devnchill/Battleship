@@ -1,4 +1,5 @@
-import { Ship } from "../src/Components/Ship";
+import { Ship, Submarine, Destroyer } from "../src/Components/Ship";
+import { Direction } from "../src/Types/ship.types";
 
 describe("Ship class tests", () => {
   test("creates a ship with given length", () => {
@@ -23,5 +24,19 @@ describe("Ship class tests", () => {
     ship.hit();
     ship.hit();
     expect(ship.isSunk()).toBe(true);
+  });
+
+  test("ensure default orientation is HORIZONTAL", () => {
+    const ship = new Ship(2);
+    expect(ship.orientation).toBe(Direction.HORIZONTAL);
+  });
+
+  test("inherited ship(Submarine) have their length pre assigned", () => {
+    const sub = new Submarine();
+    expect(sub.length).toBe(3);
+  });
+  test("inherited ship(Destroyer) have their length pre assigned", () => {
+    const sub = new Destroyer();
+    expect(sub.length).toBe(2);
   });
 });

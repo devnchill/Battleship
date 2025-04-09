@@ -1,5 +1,4 @@
 class Ship {
-  //instance variables (unique for each ship object)
   private hitCount: number;
   private readonly length: number;
 

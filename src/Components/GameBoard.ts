@@ -28,7 +28,7 @@ class GameBoard {
     return this._board;
   }
 
-  placeShip(ship: Ship, coor: Coordinates) {
+  placeShip(ship: Ship, coor: Coordinates): void {
     const [x, y] = coor;
     const lengthOfShip = ship.length;
     const orientation = ship.orientation;
@@ -54,7 +54,7 @@ class GameBoard {
     this.ships.add(ship);
   }
 
-  receiveAttack(coor: Coordinates) {
+  receiveAttack(coor: Coordinates): void {
     const board = this._board;
     const [x, y] = coor;
     if (board[x][y].state == CellState.UNTOUCHED)
@@ -63,6 +63,10 @@ class GameBoard {
       board[x][y].state = CellState.HIT;
       const ship = board[x][y].ship;
       ship.hit();
+    }
+    if (board[x][y].state == CellState.MISSED) {
+      //TODO: Add better handling
+      throw new Error("Coordinates already marked");
     }
   }
 }

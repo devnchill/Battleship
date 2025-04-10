@@ -1,6 +1,6 @@
-enum Direction {
+enum Orientation {
   HORIZONTAL,
   VERTICAL,
 }
 
-export { Direction };
+export { Orientation };

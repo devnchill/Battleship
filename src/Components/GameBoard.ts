@@ -1,7 +1,7 @@
 import type { ICell } from "../Types/board.types";
 import { CellState } from "../Types/board.types";
 import { Coordinates } from "../Types/common.types";
-import { Direction } from "../Types/ship.types";
+import { Orientation } from "../Types/ship.types";
 import { Ship } from "./Ship";
 
 class GameBoard {
@@ -30,11 +30,11 @@ class GameBoard {
 
   placeShip(ship: Ship, coor: Coordinates) {
     const [x, y] = coor;
-    const lengthOfShip = ship.health;
+    const lengthOfShip = ship.length;
     const orientation = ship.orientation;
     const arrOfCoor: Coordinates[] = [];
     let count = 0;
-    if (orientation == Direction.HORIZONTAL) {
+    if (orientation == Orientation.HORIZONTAL) {
       while (count < lengthOfShip) {
         arrOfCoor.push([x, y + count]);
         count++;

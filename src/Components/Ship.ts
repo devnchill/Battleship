@@ -1,11 +1,11 @@
-import { Direction } from "../Types/ship.types";
+import { Orientation } from "../Types/ship.types";
 
 class Ship {
   private hitCount: number;
   private readonly _length: number;
-  protected _orientation: Direction;
+  protected _orientation: Orientation;
 
-  constructor(length: number, orientation = Direction.HORIZONTAL) {
+  constructor(length: number, orientation = Orientation.HORIZONTAL) {
     this._length = length;
     this.hitCount = 0;
     this._orientation = orientation;
@@ -23,7 +23,7 @@ class Ship {
     return this._length;
   }
 
-  get orientation(): Direction {
+  get orientation(): Orientation {
     return this._orientation;
   }
 

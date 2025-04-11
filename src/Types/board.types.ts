@@ -1,4 +1,4 @@
-import type { Ship } from "../Components/Ship";
+import type { Ship } from "../Core/Ship";
 
 enum CellState {
   UNTOUCHED,

@@ -1,5 +1,5 @@
-import { GameBoard } from "../src/Components/GameBoard";
-import { Ship } from "../src/Components/Ship";
+import { GameBoard } from "../src/Core/GameBoard";
+import { Ship } from "../src/Core/Ship";
 import { CellState } from "../src/Types/board.types";
 import { Orientation } from "../src/Types/ship.types";
 import { InvalidCoordinateError, ShipOverlapError } from "../src/Util/error";

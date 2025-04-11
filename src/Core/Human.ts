@@ -3,7 +3,7 @@ import { PlayerType } from "../Types/player.types";
 import { GameBoard } from "./GameBoard";
 import { Coordinates } from "../Types/common.types";
 
-class Ai extends Player {
+class Human extends Player {
   constructor(name = PlayerType.Human) {
     super(name);
   }
@@ -12,4 +12,4 @@ class Ai extends Player {
     oppBoard.receiveAttack(coor);
   }
 }
-export { Ai };
+export { Human };

@@ -1,4 +1,4 @@
-import { Ship, Submarine, Destroyer } from "../src/Components/Ship";
+import { Ship, Submarine, Destroyer } from "../src/Core/Ship";
 import { Orientation } from "../src/Types/ship.types";
 
 describe("Ship class tests", () => {

@@ -2,6 +2,7 @@ import type { ICell } from "../Types/board.types";
 import { CellState } from "../Types/board.types";
 import { Coordinates } from "../Types/common.types";
 import { Orientation } from "../Types/ship.types";
+import { InvalidCoordinateError, ShipOverlapError } from "../Util/error";
 import { validateCoordinate, validateNoOverlap } from "../Util/validation";
 import { Ship } from "./Ship";
 
@@ -35,6 +36,7 @@ class GameBoard {
     const orientation = ship.orientation;
     const arrOfCoor: Coordinates[] = [];
     let count = 0;
+
     if (orientation == Orientation.HORIZONTAL) {
       while (count < lengthOfShip) {
         arrOfCoor.push([x, y + count]);
@@ -46,24 +48,58 @@ class GameBoard {
         count++;
       }
     }
-    validateNoOverlap(this.board, arrOfCoor);
+
+    try {
+      validateNoOverlap(this.board, arrOfCoor);
+    } catch (error) {
+      if (error instanceof ShipOverlapError) {
+        console.error(error.message);
+        throw error;
+      }
+      throw error;
+    }
+
+    try {
+      for (const c of arrOfCoor) {
+        validateCoordinate(c);
+      }
+    } catch (error) {
+      if (error instanceof InvalidCoordinateError) {
+        console.error(error.message);
+        throw error;
+      }
+      throw error;
+    }
+
     for (const c of arrOfCoor) {
-      validateCoordinate(c);
       const [a, b] = c;
       const cell = this.board[a][b];
       cell.ship = ship;
       cell.hasShip = true;
     }
+
     this.ships.add(ship);
   }
 
   receiveAttack(coor: Coordinates): void {
-    validateCoordinate(coor);
+    try {
+      validateCoordinate(coor);
+    } catch (error) {
+      if (error instanceof InvalidCoordinateError) {
+        console.error(error.message);
+        throw error;
+      }
+      throw error;
+    }
+
     const board = this._board;
     const [x, y] = coor;
     const cell = board[x][y];
-    if (cell.state !== CellState.UNTOUCHED)
+
+    if (cell.state !== CellState.UNTOUCHED) {
       throw new Error(`Coordinates [${x}, ${y}] already attacked.`);
+    }
+
     if (cell.hasShip && cell.ship) {
       cell.state = CellState.HIT;
       const ship = cell.ship;

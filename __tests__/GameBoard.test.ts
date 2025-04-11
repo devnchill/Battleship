@@ -2,6 +2,7 @@ import { GameBoard } from "../src/Components/GameBoard";
 import { Ship } from "../src/Components/Ship";
 import { CellState } from "../src/Types/board.types";
 import { Orientation } from "../src/Types/ship.types";
+import { ShipOverlapError } from "../src/Util/error";
 
 describe("Test for GameBoard", () => {
   test("make sure it creates a 2D 10x10 array with appropriate properties", () => {
@@ -39,10 +40,9 @@ describe("Test for GameBoard", () => {
     expect(gameBoard.board[0][1].hasShip).toBeTruthy();
     expect(gameBoard.board[0][2].hasShip).toBeTruthy();
     expect(gameBoard.board[1][0].hasShip).toBeFalsy();
-    gameBoard.placeShip(new Ship(3, Orientation.VERTICAL), [0, 0]);
-    expect(gameBoard.board[1][0].hasShip).toBeTruthy();
-    expect(gameBoard.board[2][0].hasShip).toBeTruthy();
-    expect(gameBoard.board[3][0].hasShip).toBeFalsy();
+    expect(() => {
+      gameBoard.placeShip(new Ship(3, Orientation.VERTICAL), [0, 0]);
+    }).toThrowError(ShipOverlapError);
   });
 
   test("test for receiveAttack", () => {

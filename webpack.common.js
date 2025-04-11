@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { resolve } = require("url");
 
 module.exports = {
   entry: {
@@ -15,6 +16,9 @@ module.exports = {
     filename: "[main].js",
     path: path.resolve(__dirname, "dist"),
     clean: true,
+  },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".json"],
   },
   module: {
     rules: [

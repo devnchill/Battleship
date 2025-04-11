@@ -2,6 +2,7 @@ import type { ICell } from "../Types/board.types";
 import { CellState } from "../Types/board.types";
 import { Coordinates } from "../Types/common.types";
 import { Orientation } from "../Types/ship.types";
+import { validateCoordinate, validateNoOverlap } from "../Util/validation";
 import { Ship } from "./Ship";
 
 class GameBoard {
@@ -45,28 +46,30 @@ class GameBoard {
         count++;
       }
     }
-    const board = this.board;
+    validateNoOverlap(this.board, arrOfCoor);
     for (const c of arrOfCoor) {
+      validateCoordinate(c);
       const [a, b] = c;
-      board[a][b].ship = ship;
-      board[a][b].hasShip = true;
+      const cell = this.board[a][b];
+      cell.ship = ship;
+      cell.hasShip = true;
     }
     this.ships.add(ship);
   }
 
   receiveAttack(coor: Coordinates): void {
+    validateCoordinate(coor);
     const board = this._board;
     const [x, y] = coor;
-    if (board[x][y].state == CellState.UNTOUCHED)
-      board[x][y].state = CellState.MISSED;
-    if (board[x][y].hasShip && board[x][y].ship) {
-      board[x][y].state = CellState.HIT;
-      const ship = board[x][y].ship;
+    const cell = board[x][y];
+    if (cell.state !== CellState.UNTOUCHED)
+      throw new Error(`Coordinates [${x}, ${y}] already attacked.`);
+    if (cell.hasShip && cell.ship) {
+      cell.state = CellState.HIT;
+      const ship = cell.ship;
       ship.hit();
-    }
-    if (board[x][y].state == CellState.MISSED) {
-      //TODO: Add better handling
-      throw new Error("Coordinates already marked");
+    } else {
+      cell.state = CellState.MISSED;
     }
   }
 }

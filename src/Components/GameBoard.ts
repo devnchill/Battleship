@@ -2,7 +2,6 @@ import type { ICell } from "../Types/board.types";
 import { CellState } from "../Types/board.types";
 import { Coordinates } from "../Types/common.types";
 import { Orientation } from "../Types/ship.types";
-import { InvalidCoordinateError, ShipOverlapError } from "../Util/error";
 import { validateCoordinate, validateNoOverlap } from "../Util/validation";
 import { Ship } from "./Ship";
 
@@ -49,27 +48,11 @@ class GameBoard {
       }
     }
 
-    try {
-      validateNoOverlap(this.board, arrOfCoor);
-    } catch (error) {
-      if (error instanceof ShipOverlapError) {
-        console.error(error.message);
-        throw error;
-      }
-      throw error;
+    for (const c of arrOfCoor) {
+      validateCoordinate(c);
     }
 
-    try {
-      for (const c of arrOfCoor) {
-        validateCoordinate(c);
-      }
-    } catch (error) {
-      if (error instanceof InvalidCoordinateError) {
-        console.error(error.message);
-        throw error;
-      }
-      throw error;
-    }
+    validateNoOverlap(this.board, arrOfCoor);
 
     for (const c of arrOfCoor) {
       const [a, b] = c;
@@ -77,21 +60,11 @@ class GameBoard {
       cell.ship = ship;
       cell.hasShip = true;
     }
-
     this.ships.add(ship);
   }
 
   receiveAttack(coor: Coordinates): void {
-    try {
-      validateCoordinate(coor);
-    } catch (error) {
-      if (error instanceof InvalidCoordinateError) {
-        console.error(error.message);
-        throw error;
-      }
-      throw error;
-    }
-
+    validateCoordinate(coor);
     const board = this._board;
     const [x, y] = coor;
     const cell = board[x][y];

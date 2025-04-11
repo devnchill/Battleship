@@ -2,7 +2,7 @@ import { GameBoard } from "../src/Components/GameBoard";
 import { Ship } from "../src/Components/Ship";
 import { CellState } from "../src/Types/board.types";
 import { Orientation } from "../src/Types/ship.types";
-import { ShipOverlapError } from "../src/Util/error";
+import { InvalidCoordinateError, ShipOverlapError } from "../src/Util/error";
 
 describe("Test for GameBoard", () => {
   test("make sure it creates a 2D 10x10 array with appropriate properties", () => {
@@ -35,20 +35,29 @@ describe("Test for GameBoard", () => {
 
   test("test for placeShip", () => {
     const gameBoard = new GameBoard();
-    gameBoard.placeShip(new Ship(3), [0, 0]);
+    gameBoard.placeShip(new Ship(3), [0, 0]); // This should succeed
+
     expect(gameBoard.board[0][0].hasShip).toBeTruthy();
     expect(gameBoard.board[0][1].hasShip).toBeTruthy();
     expect(gameBoard.board[0][2].hasShip).toBeTruthy();
     expect(gameBoard.board[1][0].hasShip).toBeFalsy();
+
     expect(() => {
       gameBoard.placeShip(new Ship(3, Orientation.VERTICAL), [0, 0]);
     }).toThrowError(ShipOverlapError);
+
+    expect(() => {
+      gameBoard.placeShip(new Ship(3, Orientation.VERTICAL), [9, 9]);
+    }).toThrowError(InvalidCoordinateError);
   });
 
   test("test for receiveAttack", () => {
     const gameBoard = new GameBoard();
     gameBoard.placeShip(new Ship(5), [0, 0]);
     gameBoard.receiveAttack([0, 0]);
+    expect(() => {
+      gameBoard.receiveAttack([10, 0]);
+    }).toThrowError(InvalidCoordinateError);
     expect(gameBoard.board[0][0].ship?.health).toBe(4);
     expect(gameBoard.board[0][0].state).toBe(CellState.HIT);
     expect(gameBoard.board[0][9].state).toBe(CellState.UNTOUCHED);

@@ -37,7 +37,7 @@ class GameController {
     const cruiser = new Cruiser();
     const submarine = new Submarine();
     const destroyer = new Destroyer();
-    //TODO: ask player to drag and drop ships later , for now pass coordinates directly in arguments....
+    //HACK: ask player to drag and drop ships later , for now pass coordinates directly in arguments....
     this.human.gameBoard.placeShip(carrier, [0, 0]);
     this.human.gameBoard.placeShip(battleship, [1, 3]);
     this.human.gameBoard.placeShip(cruiser, [2, 3]);
@@ -67,12 +67,23 @@ class GameController {
     this.placeShipRandomly(new Destroyer(), this.ai.gameBoard);
   }
 
+  private checkWin() {
+    return this.opponent.gameBoard.areAllShipsSunk();
+  }
   makeMove() {
+    //NOTE: MakeMove for ai and human is different since ai doesn't requires coordinates as an argument.
     if (this.currentPlayer == this.human) {
       this.currentPlayer.makeMove([3, 4], this.opponent.gameBoard);
     } else if (this.currentPlayer == this.ai) {
       this.currentPlayer.makeMove(this.opponent.gameBoard);
     }
+
+    if (this.checkWin()) {
+      console.log(`${this.currentPlayer.name} wins!`);
+      //TODO: Better handling
+      return; // Game ends here
+    }
+
     this.switchTurn();
   }
 

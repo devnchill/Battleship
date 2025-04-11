@@ -9,8 +9,14 @@ class Ai extends Player {
   }
 
   makeMove(oppBoard: GameBoard): void {
-    const coor = getRandomCoord();
-    oppBoard.receiveAttack(coor);
+    try {
+      const coor = getRandomCoord();
+      oppBoard.receiveAttack(coor);
+    } catch (error) {
+      //NOTE: calling it recursively unless the coordinate is valid and is able to attack.
+      this.makeMove(oppBoard);
+      console.log(error);
+    }
   }
 }
 export { Ai };

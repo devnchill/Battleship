@@ -9,7 +9,12 @@ class Human extends Player {
   }
 
   makeMove(coor: Coordinates, oppBoard: GameBoard): void {
-    oppBoard.receiveAttack(coor);
+    try {
+      oppBoard.receiveAttack(coor);
+    } catch (error) {
+      //TODO: Notify user to select a choose again
+      console.log(error);
+    }
   }
 }
 export { Human };

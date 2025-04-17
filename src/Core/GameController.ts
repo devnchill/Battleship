@@ -1,4 +1,4 @@
-import { ShipOverlapError } from "../Util/error";
+import { InvalidCoordinateError, ShipOverlapError } from "../Util/error";
 import { getRandomCoord } from "../Util/random";
 import { Ai } from "./Ai";
 import { GameBoard } from "./GameBoard";
@@ -50,7 +50,10 @@ class GameController {
     try {
       board.placeShip(ship, coord);
     } catch (e) {
-      if (e instanceof ShipOverlapError) {
+      if (
+        e instanceof ShipOverlapError ||
+        e instanceof InvalidCoordinateError
+      ) {
         this.placeShipRandomly(ship, board);
       } else {
         //Some other cause for error

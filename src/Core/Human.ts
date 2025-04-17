@@ -12,7 +12,7 @@ class Human extends Player {
     try {
       oppBoard.receiveAttack(coor);
     } catch (error) {
-      //TODO: Notify user to select a choose again
+      // TODO: Notify user to select a choose again
       console.log(error);
     }
   }

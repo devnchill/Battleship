@@ -1,6 +1,9 @@
 import "./css/styles.css";
-const body = document.body as HTMLBodyElement;
-const message: HTMLElement = document.createElement("h1");
-message.textContent = "Webpack + TypeScript successfully set up! 🚀";
+import { GameController } from "./Core/GameController";
 
-body.appendChild(message);
+const controller = new GameController();
+const humanPlayer = controller.human.gameBoard.board;
+const aiPlayer = controller.ai.gameBoard.board;
+console.log("Human's Board", humanPlayer);
+console.log("Ai's Board", aiPlayer);
+controller.makeMove();

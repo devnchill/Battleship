@@ -2,10 +2,10 @@ import { PlayerType } from "../Types/player.types";
 import { GameBoard } from "./GameBoard";
 
 class Player {
-  name: PlayerType;
+  name: string;
   private _gameBoard: GameBoard;
 
-  constructor(name: PlayerType) {
+  constructor(name: string, type: PlayerType) {
     this.name = name;
     this._gameBoard = new GameBoard();
   }

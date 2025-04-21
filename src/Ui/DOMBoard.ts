@@ -16,43 +16,28 @@ class DomBoard {
 
   createBoard() {
     this.container.classList.add("board");
-    for (let i = 0; i < 10; i++) {
-      const row = document.createElement("div");
-      for (let j = 0; j < 10; j++) {
-        const cell = document.createElement(this.cellType);
-        cell.dataset.x = i.toString();
-        cell.dataset.y = j.toString();
-        if (this.cellType === "button") {
-          cell.addEventListener("click", () => {
-            console.log(`Clicked AI cell at: (${i}, ${j})`);
-          });
-        }
-        row.appendChild(cell);
-      }
-      this.container.appendChild(row);
+    for (let i = 0; i < 100; i++) {
+      const cell = document.createElement(this.cellType);
+      cell.classList.add("board-cell");
+      this.container.append(cell);
     }
     return this.container;
   }
 
   renderFromBoard(logicalBoard: GameBoard) {
     const boardMatrix: ICell[][] = logicalBoard.board;
-    for (let i = 0; i < boardMatrix.length; i++) {
-      const row = this.container.children[i] as HTMLDivElement;
-      for (let j = 0; j < boardMatrix[i].length; j++) {
-        const cell = row.children[j] as HTMLDivElement;
-        const cellData = boardMatrix[i][j];
-        if (cellData.hasShip) {
-          if (cellData.state === CellState.HIT) {
-            cell.classList.add("HIT");
-          } else {
-            cell.classList.add("UNTOUCHED-SHIP");
-          }
-        } else if (cellData.state === CellState.MISSED) {
-          cell.classList.add("MISSED");
-        } else if (cellData.state === CellState.UNTOUCHED) {
-          cell.classList.remove("MISSED", "HIT", "UNTOUCHED-SHIP");
-          cell.classList.add("UNTOUCHED");
-        }
+    for (let i = 0; i < 100; i++) {
+      const cell = this.container.children[i] as HTMLDivElement;
+      const row = Math.floor(i / 10);
+      const col = i % 10;
+      const cellData = boardMatrix[row][col];
+      cell.classList.remove("HIT", "MISSED", "UNTOUCHED");
+      if (cellData.state === CellState.HIT) {
+        cell.classList.add("HIT");
+      } else if (cellData.state === CellState.MISSED) {
+        cell.classList.add("MISSED");
+      } else if (cellData.state === CellState.UNTOUCHED) {
+        cell.classList.add("UNTOUCHED");
       }
     }
   }

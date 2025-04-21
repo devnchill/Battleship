@@ -19,7 +19,7 @@ body {
   background-size: cover;
   display: grid;
   grid-template-areas: "header" "main" "footer";
-  grid-template-rows: 8% 85% 1fr;
+  grid-template-rows: 5% 90% 1fr;
   & > header {
     grid-area: header;
     display: flex;
@@ -30,6 +30,18 @@ body {
     }
   }
   & > main {
+    display: flex;
+    justify-content: space-between;
+    & > .board {
+      flex-basis: 50%;
+      display: grid;
+      grid-template-rows: repeat(10, 10px);
+      grid-template-columns: repeat(10, 10px);
+      & > .board-cell {
+        width: 10px;
+        height: 10px;
+      }
+    }
   }
   & > footer {
     display: flex;

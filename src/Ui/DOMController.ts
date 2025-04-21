@@ -3,19 +3,21 @@ import { GameController } from "../Core/GameController";
 import { DomBoard } from "./DOMBoard";
 
 class DomController {
+  private game: GameController;
   private humanDomBoard: DomBoard;
   private aiDomBoard: DomBoard;
-  private game: GameController;
 
-  constructor() {
-    this.game = new GameController();
+  constructor(name: string) {
+    this.game = new GameController(name);
     this.humanDomBoard = new DomBoard(PlayerType.Human);
     this.aiDomBoard = new DomBoard(PlayerType.Ai);
+    this.setupUi();
   }
 
   setupUi() {
-    document.body.appendChild(this.humanDomBoard.createBoard());
-    document.body.appendChild(this.aiDomBoard.createBoard());
+    const MAIN = document.querySelector("main");
+    MAIN?.appendChild(this.humanDomBoard.createBoard());
+    MAIN?.appendChild(this.aiDomBoard.createBoard());
     this.humanDomBoard.renderFromBoard(this.game.human.gameBoard);
     this.aiDomBoard.renderFromBoard(this.game.ai.gameBoard);
   }

@@ -4,8 +4,8 @@ import { GameBoard } from "./GameBoard";
 import { Coordinates } from "../Types/common.types";
 
 class Human extends Player {
-  constructor(name = PlayerType.Human) {
-    super(name);
+  constructor(name: string) {
+    super(name, PlayerType.Human);
   }
 
   makeMove(coor: Coordinates, oppBoard: GameBoard): void {

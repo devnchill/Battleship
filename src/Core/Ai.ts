@@ -4,8 +4,8 @@ import { getRandomCoord } from "../Util/random";
 import { GameBoard } from "./GameBoard";
 
 class Ai extends Player {
-  constructor(name = PlayerType.Ai) {
-    super(name);
+  constructor() {
+    super("Chad", PlayerType.Ai);
   }
 
   makeMove(oppBoard: GameBoard): void {

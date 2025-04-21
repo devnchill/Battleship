@@ -18,8 +18,8 @@ class GameController {
   currentPlayer: Human | Ai;
   opponent: Human | Ai;
 
-  constructor() {
-    this.human = new Human();
+  constructor(name: string) {
+    this.human = new Human(name);
     this.ai = new Ai();
     this.currentPlayer = this.human;
     this.opponent = this.ai;

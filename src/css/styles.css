@@ -31,15 +31,14 @@ body {
   }
   & > main {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
     & > .board {
-      flex-basis: 50%;
       display: grid;
-      grid-template-rows: repeat(10, 10px);
-      grid-template-columns: repeat(10, 10px);
+      grid-template-rows: repeat(10, 50px);
+      grid-template-columns: repeat(10, 50px);
       & > .board-cell {
-        width: 10px;
-        height: 10px;
+        border: 2px solid white;
       }
     }
   }

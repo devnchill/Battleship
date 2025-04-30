@@ -16,7 +16,11 @@ class DomController {
     this.aiDomBoard.renderFromBoard(this.game.ai.gameBoard);
   }
 
-  setupUi() {}
+  setupUi() {
+    const MAIN = document.querySelector("main");
+    MAIN?.appendChild(this.humanDomBoard.createBoard());
+    MAIN?.appendChild(this.aiDomBoard.createBoard());
+  }
 }
 
 export { DomController };

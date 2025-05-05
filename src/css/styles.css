@@ -18,6 +18,29 @@ body {
   height: 100%;
   width: 100%;
 }
+dialog {
+  background-color: var(--golden-yellow);
+  border-radius: 1rem;
+  > form {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    line-height: 3rem;
+    gap: 1rem;
+    label,
+    button {
+      font-weight: 900;
+      font-size: 2rem;
+    }
+    label,
+    input {
+      width: 100%;
+    }
+    input {
+      font-size: 2rem;
+      height: 3rem;
+    }
+  }
+}
 body {
   header,
   footer,

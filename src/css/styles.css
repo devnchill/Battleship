@@ -60,8 +60,8 @@ body {
     & > a > svg {
       filter: invert(87%) sepia(15%) saturate(5952%) hue-rotate(8deg)
         brightness(116%) contrast(55%);
-      width: auto;
       height: 3rem;
+      width: 3rem;
     }
   }
 }

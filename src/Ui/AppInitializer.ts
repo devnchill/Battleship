@@ -1,27 +1,20 @@
 import { BuildElement } from "../Util/buildelement";
-import { DomController } from "./DOMController";
-import volumeOnIcon from "../assets/images/sound_on.svg";
+import { ShipPlacementUi } from "./ShipPlacementUi";
 
 class AppInitializer {
-  private _domController: DomController | null = null;
-
   constructor() {
-    this.setupFirstPage();
-    this.setupStartupDialog();
+    this.initializeStartup();
+    this.setupNameInputHandler();
   }
 
-  public getDomController(): DomController | null {
-    return this._domController;
-  }
-
-  public setupFirstPage() {
+  public initializeStartup() {
     const nameLabel = new BuildElement(
       "label",
       "",
       "",
       "",
       [],
-      "Enter your name:",
+      "ENTER YOUR NAME:",
       "",
     );
     nameLabel.element.setAttribute("for", "name-input");
@@ -35,6 +28,8 @@ class AppInitializer {
       "text",
     );
     nameInput.element.id = "name-input";
+    nameInput.element.setAttribute("required", "true");
+    nameInput.element.setAttribute("minlength", "3");
     const inputDiv = new BuildElement(
       "div",
       "",
@@ -67,19 +62,6 @@ class AppInitializer {
       [inputDiv.element, submitButton.element],
     );
     form.element.setAttribute("method", "dialog");
-
-    const soundIcon = new BuildElement(
-      "img",
-      volumeOnIcon,
-      "sound-on",
-      "",
-      ["sound-icon"],
-      "",
-      "",
-      [],
-    );
-    soundIcon.element.style.height = "3rem";
-    soundIcon.element.style.width = "3rem";
 
     const dialog = new BuildElement(
       "dialog",
@@ -131,23 +113,21 @@ class AppInitializer {
 
     document.body.appendChild(FOOTER.element);
     const MAIN = new BuildElement("main", "", "", "", [], "", "", [
-      soundIcon.element,
       dialog.element,
     ]);
     document.body.appendChild(MAIN.element);
     document.body.appendChild(FOOTER.element);
   }
 
-  setupStartupDialog() {
+  setupNameInputHandler() {
     const dialog = document.querySelector("dialog");
     dialog?.showModal();
     const form = document.querySelector("#startup-dialog-form");
     form?.addEventListener("submit", () => {
       const nameInput = document.querySelector<HTMLInputElement>("#name-input");
       const name = nameInput?.value.trim();
-      console.log(name);
       if (name) {
-        this._domController = new DomController(name);
+        const shipPlacementUi = new ShipPlacementUi(name);
       }
     });
   }

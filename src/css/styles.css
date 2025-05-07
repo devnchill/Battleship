@@ -90,8 +90,8 @@ body {
       right: 1.5rem;
       height: 2rem;
       cursor: pointer;
-      filter: invert(87%) sepia(15%) saturate(5952%) hue-rotate(8deg)
-        brightness(116%) contrast(55%);
+      filter: brightness(0) saturate(100%) invert(94%) sepia(6%) saturate(207%)
+        hue-rotate(169deg) brightness(96%) contrast(97%);
     }
   }
   & > footer {

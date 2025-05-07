@@ -2,6 +2,7 @@ declare module "*.svg" {
   const content: "*.svg";
   export default content;
 }
+declare module "*.mp3";
 declare module "*.png" {
   const content: "*.png";
   export default content;

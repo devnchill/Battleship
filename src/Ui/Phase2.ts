@@ -1,13 +1,11 @@
 import bg2Img from "../assets/images/bg2.jpg";
 import sound_off from "../assets/images/sound_off.svg";
+import { GamePhase, GameState } from "../Types/state.types";
 import { BuildElement } from "../Util/buildelement";
+import { handlePhaseChange } from "../Util/gamePhase";
 
 class ShipPlacementUi {
   private static oceanicText = "#e1e8ed";
-  constructor(name: string) {
-    this.resetDisplay();
-    this.displayName(name);
-  }
   resetDisplay() {
     const body = document.body;
     body.style.gridTemplateRows = "10% 80% 1fr";
@@ -51,7 +49,8 @@ class ShipPlacementUi {
     p.style.fontFamily = "Tagesschrift-Regular";
     div.appendChild(p);
     document.querySelector("main")?.appendChild(div);
+    GameState.phase = GamePhase.Battle;
+    handlePhaseChange(GameState.phase);
   }
-  displayAxis() {}
 }
 export { ShipPlacementUi };

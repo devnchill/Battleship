@@ -1,13 +1,8 @@
 import { BuildElement } from "../Util/buildelement";
-import { ShipPlacementUi } from "./ShipPlacementUi";
-
-class AppInitializer {
-  constructor() {
-    this.initializeStartup();
-    this.setupNameInputHandler();
-  }
-
-  public initializeStartup() {
+import { GamePhase, GameState } from "../Types/state.types";
+import { handlePhaseChange } from "../Util/gamePhase";
+class StartupUi {
+  public setupNameInputUi() {
     const nameLabel = new BuildElement(
       "label",
       "",
@@ -125,12 +120,13 @@ class AppInitializer {
     const form = document.querySelector("#startup-dialog-form");
     form?.addEventListener("submit", () => {
       const nameInput = document.querySelector<HTMLInputElement>("#name-input");
-      const name = nameInput?.value.trim();
-      if (name) {
-        const shipPlacementUi = new ShipPlacementUi(name);
+      if (nameInput) {
+        GameState.playerName = nameInput.value.trim();
+        GameState.phase = GamePhase.Placement;
+        handlePhaseChange(GameState.phase);
       }
     });
   }
 }
 
-export { AppInitializer };
+export { StartupUi };

@@ -73,14 +73,8 @@ class StartupUi {
     const copyrightText = new BuildElement("p", "", "", "", [], "");
     copyrightText.element.innerHTML = "&copy; DevNChill";
 
-    const githubLink = new BuildElement(
-      "a",
-      "https://github.com/devnchill/Battleship", // href attribute
-      "",
-      "",
-      [],
-      "",
-    );
+    const githubLink = new BuildElement("a", "", "", "", [], "");
+    githubLink.element.href = "https://github.com/devnchill/Battleship";
     const SVG_NS = "http://www.w3.org/2000/svg";
 
     const svg = document.createElementNS(SVG_NS, "svg");
@@ -116,7 +110,7 @@ class StartupUi {
 
   setupNameInputHandler() {
     const dialog = document.querySelector("dialog");
-    dialog?.showModal();
+    dialog?.show();
     const form = document.querySelector("#startup-dialog-form");
     form?.addEventListener("submit", () => {
       const nameInput = document.querySelector<HTMLInputElement>("#name-input");

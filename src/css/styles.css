@@ -27,6 +27,7 @@ html,
 body {
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 dialog {
   position: relative;
@@ -115,6 +116,13 @@ body.phase2 {
   grid-template-areas: "header" "main" "footer";
   grid-template-rows: 10% 85% 1fr;
   background-image: url("../assets/images/bg2.jpg");
+  .activeUiShip {
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    background-color: red;
+    display: none;
+  }
   header {
     grid-area: header;
     display: flex;

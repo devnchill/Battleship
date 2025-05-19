@@ -19,6 +19,12 @@ class DomBoard {
     for (let i = 0; i < 100; i++) {
       const cell = document.createElement(this.cellType);
       cell.classList.add("board-cell");
+
+      const row = Math.floor(i / 10);
+      const col = i % 10;
+      cell.dataset.x = col.toString();
+      cell.dataset.y = row.toString();
+
       this.container.append(cell);
     }
     return this.container;

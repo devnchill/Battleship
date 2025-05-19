@@ -13,15 +13,11 @@ function handlePhaseChange(phase: GamePhase) {
     }
     case GamePhase.Placement: {
       const shipPlacement = new ShipPlacementUi();
-      shipPlacement.resetDisplay();
       shipPlacement.displayName(GameState.playerName);
-      shipPlacement.displayAxis();
-      shipPlacement.createBoard();
-      shipPlacement.placeUiShips();
+      shipPlacement.displayOrientationButton();
       break;
     }
     case GamePhase.Battle:
-      console.log("hello");
       break;
   }
 }

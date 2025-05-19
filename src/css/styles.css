@@ -184,6 +184,13 @@ body.phase2 {
           box-sizing: border-box;
           border: 1px solid var(--oceanic-text);
         }
+        .board-cell.valid {
+          outline: 4px solid green;
+        }
+
+        .board-cell.invalid {
+          outline: 4px solid red;
+        }
       }
     }
   }

@@ -1,12 +1,15 @@
-import sound_off from "../assets/images/sound_off.svg";
+import sound_on_img from "../assets/images/sound_on.svg";
+import sound_off_img from "../assets/images/sound_off.svg";
 import { MaybeNull } from "../Types/common.types";
 import { PlayerType } from "../Types/player.types";
 import { Orientation } from "../Types/ship.types";
 import { GameState } from "../Types/state.types";
 import { BuildElement } from "../Util/buildelement";
 import { DomBoard } from "./DOMBoard";
+import bgAudio from "../assets/audio/bg.mp3";
 
-class ShipPlacementUi {
+class Phase2 {
+  private soundToggleButton: MaybeNull<HTMLImageElement> = null;
   private orientationButton: MaybeNull<HTMLButtonElement> = null;
   private body = document.body;
 
@@ -15,21 +18,40 @@ class ShipPlacementUi {
     this.createBoard();
     this.displayName(GameState.playerName);
     this.displayOrientationButton();
+    this.attachListenerToSpeaker();
   }
 
-  resetHTML() {
+  private resetHTML() {
     this.body.classList.replace("phase1", "phase2");
-    const muteButton = new BuildElement(
+    this.soundToggleButton = new BuildElement(
       "img",
-      sound_off,
+      sound_off_img,
       "Mute/Unmute",
       "mute-btn",
       ["mute-toggle"],
-    ).element;
-    document.querySelector("header")?.appendChild(muteButton);
+    ).element as HTMLImageElement;
+    document.querySelector("header")?.appendChild(this.soundToggleButton);
   }
 
-  displayName(name: string) {
+  private attachListenerToSpeaker() {
+    let isMuted = true;
+    const music = new Audio(bgAudio);
+    this.soundToggleButton?.addEventListener("click", () => {
+      if (isMuted) {
+        music.play();
+        // unmute and use unmuted img
+      } else {
+        music.pause();
+        //mute and use muted img
+      }
+      isMuted = !isMuted;
+      (this.soundToggleButton as HTMLImageElement).src = isMuted
+        ? sound_off_img
+        : sound_on_img;
+    });
+  }
+
+  private displayName(name: string) {
     const div = document.createElement("div");
     div.classList.add("instruct-div");
     const p = document.createElement("p");
@@ -37,6 +59,7 @@ class ShipPlacementUi {
     div.appendChild(p);
     document.querySelector("main")?.appendChild(div);
   }
+
   displayOrientationButton() {
     this.orientationButton = document.createElement("button");
     this.orientationButton.classList.add("ship-axis");
@@ -59,4 +82,4 @@ class ShipPlacementUi {
   }
 }
 
-export { ShipPlacementUi };
+export default Phase2;

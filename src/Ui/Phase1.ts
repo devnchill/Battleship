@@ -1,7 +1,7 @@
 import { BuildElement } from "../Util/buildelement";
 import { GamePhase, GameState } from "../Types/state.types";
-import { handlePhaseChange } from "../Util/gamePhase";
-class StartupUi {
+import handlePhaseChange from "../Util/gamePhase";
+class Phase1 {
   public setupNameInputUi() {
     const nameLabel = new BuildElement(
       "label",
@@ -74,7 +74,8 @@ class StartupUi {
     copyrightText.element.innerHTML = "&copy; DevNChill";
 
     const githubLink = new BuildElement("a", "", "", "", [], "");
-    githubLink.element.href = "https://github.com/devnchill/Battleship";
+    (githubLink.element as HTMLAnchorElement).href =
+      "https://github.com/devnchill/Battleship";
     const SVG_NS = "http://www.w3.org/2000/svg";
 
     const svg = document.createElementNS(SVG_NS, "svg");
@@ -123,4 +124,4 @@ class StartupUi {
   }
 }
 
-export { StartupUi };
+export default Phase1;

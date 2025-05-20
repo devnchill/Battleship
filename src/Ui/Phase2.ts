@@ -7,6 +7,11 @@ import { BuildElement } from "../Util/buildelement";
 import { handlePhaseChange } from "../Util/gamePhase";
 import { DomBoard } from "./DOMBoard";
 
+import destroyerImg from "../assets/images/destroyer.svg";
+import submarineImg from "../assets/images/submarine.svg";
+import patrolImg from "../assets/images/patrol.svg";
+import carrierImg from "../assets/images/carrier.svg";
+
 class ShipPlacementUi {
   private cellLength!: number;
   private orientationButton: MaybeNull<HTMLButtonElement> = null;
@@ -81,24 +86,44 @@ class ShipPlacementUi {
     boardContainer.appendChild(board);
 
     document.querySelector("main")?.appendChild(boardContainer);
-    this.cellLength = document
-      .querySelector(".board-cell")
-      .getBoundingClientRect().width;
+    const boardCell = document.querySelector(".board-cell");
+    if (!boardCell) {
+      throw new Error("Board cell not found when initializing cellLength.");
+    }
+    this.cellLength = boardCell.getBoundingClientRect().width;
   }
+
+  private shipImages: Record<string, string> = {
+    Destroyer: destroyerImg,
+    Submarine: submarineImg,
+    Cruiser: patrolImg,
+    Carrier: carrierImg,
+  };
 
   private createUiShipElement(ship: uiShipObj): HTMLDivElement {
     const uiShip = document.createElement("div");
     uiShip.classList.add("activeUiShip");
 
+    const img = document.createElement("img");
+    img.src = this.shipImages[ship.name];
+    img.alt = ship.name;
+    img.style.pointerEvents = "none";
+
     if (!this.isHorizontal()) {
       uiShip.style.width = `${ship.length * this.cellLength}px`;
       uiShip.style.height = `${this.cellLength}px`;
+      img.style.transform = "rotate(90deg)";
     } else {
       uiShip.style.height = `${ship.length * this.cellLength}px`;
       uiShip.style.width = `${this.cellLength}px`;
     }
 
+    img.style.width = "100%";
+    img.style.height = "100%";
+
+    uiShip.appendChild(img);
     document.body.appendChild(uiShip);
+
     return uiShip;
   }
 
@@ -110,7 +135,6 @@ class ShipPlacementUi {
       { name: "Destroyer", length: 2 },
       { name: "Submarine", length: 3 },
       { name: "Cruiser", length: 3 },
-      { name: "Battleship", length: 4 },
       { name: "Carrier", length: 5 },
     ];
     let activeShip: MaybeNull<uiShipObj> = null;
@@ -168,7 +192,7 @@ class ShipPlacementUi {
    * @returns array of HTMLElements for cells covered
    */
   private getShipCells(
-    startCell: HTMLElement,
+    startCell: HTMLDivElement,
     length: number,
     orientation: string,
   ): HTMLElement[] {
@@ -196,6 +220,11 @@ class ShipPlacementUi {
   ) {
     board.addEventListener("mouseleave", () => {
       uiShip.style.display = "none";
+      document
+        .querySelectorAll(".board-cell.valid, .board-cell.invalid")
+        .forEach((cell) => {
+          cell.classList.remove("valid", "invalid");
+        });
     });
 
     board.addEventListener("mousemove", (e: MouseEvent) => {
@@ -239,29 +268,77 @@ class ShipPlacementUi {
       uiShip.innerHTML = `X: ${x}<br>Y: ${y}`;
       uiShip.style.top = `${y}px`;
       uiShip.style.left = `${x + 20}px`;
+      // Resize and rotate preview image live
+      if (this.activeShipObj) {
+        const length = this.activeShipObj.length;
+        const img = uiShip.querySelector("img") as HTMLImageElement | null;
+
+        if (img) {
+          if (currentAxis === Orientation.HORIZONTAL) {
+            uiShip.style.width = `${length * this.cellLength}px`;
+            uiShip.style.height = `${this.cellLength}px`;
+            img.style.transform = "rotate(0deg)";
+          } else {
+            uiShip.style.width = `${this.cellLength}px`;
+            uiShip.style.height = `${length * this.cellLength}px`;
+            img.style.transform = "rotate(90deg)";
+          }
+        }
+      }
     });
 
     board.addEventListener("click", (e) => {
-      //as soon as click check for bounds.
       const targetCell = (e.target as HTMLDivElement).closest(
         ".board-cell",
       ) as HTMLDivElement;
-      if (!targetCell) return;
-
-      let currentAxis = "x";
-      if (this.isHorizontal()) {
-        currentAxis = "y";
+      if (!targetCell) {
+        console.log("Target cell not found");
+        return;
       }
-      const coord = parseInt(targetCell.dataset[currentAxis] || "0", 10);
 
-      if (!this.activeShipObj) return;
+      const orientation =
+        this.orientationButton?.dataset.orientation ?? Orientation.HORIZONTAL;
+      const shipCells = this.getShipCells(
+        targetCell,
+        this.activeShipObj?.length ?? 0,
+        orientation,
+      );
+      const isValid = shipCells.length === this.activeShipObj?.length;
 
-      const shipEnd = coord + this.activeShipObj.length - 1;
-      if (shipEnd <= 9) {
-        //  place ship and go to next one
+      if (!isValid) return;
+
+      const img = document.createElement("img");
+      img.src = this.shipImages[this.activeShipObj.name];
+      img.alt = this.activeShipObj.name;
+      img.classList.add("placed-ship-img");
+      board.style.position = "relative";
+      img.style.position = "absolute";
+      img.style.pointerEvents = "none";
+      const boardRect = board.getBoundingClientRect();
+      if (!isValid || shipCells.length === 0) return;
+      const firstCellRect = shipCells[0].getBoundingClientRect();
+
+      // Calculate top and left relative to board
+      const top = firstCellRect.top - boardRect.top;
+      const left = firstCellRect.left - boardRect.left;
+
+      img.style.top = `${top}px`;
+      img.style.left = `${left}px`;
+
+      if (orientation === Orientation.HORIZONTAL) {
+        img.style.width = `${this.cellLength * this.activeShipObj.length}px`;
+        img.style.height = `${this.cellLength}px`;
+        img.style.transform = "rotate(0deg)";
       } else {
-        //  don't place ship
+        img.style.width = `${this.cellLength}px`;
+        img.style.height = `${this.cellLength * this.activeShipObj.length}px`;
+        img.style.transform = "rotate(90deg)";
       }
+
+      // Append image inside the board container (so positioning works relative to board)
+      board.appendChild(img);
+
+      // TODO: store ship position & move to next ship
     });
   }
 }

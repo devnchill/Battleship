@@ -8,7 +8,7 @@ module.exports = merge(common, {
     port: 6969,
     open: {
       app: {
-        name: "google-chrome-stable",
+        name: "zen-browser",
       },
     },
     watchFiles: ["./src/template.html"],

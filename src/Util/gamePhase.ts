@@ -13,8 +13,6 @@ function handlePhaseChange(phase: GamePhase) {
     }
     case GamePhase.Placement: {
       const shipPlacement = new ShipPlacementUi();
-      shipPlacement.displayName(GameState.playerName);
-      shipPlacement.displayOrientationButton();
       break;
     }
     case GamePhase.Battle:

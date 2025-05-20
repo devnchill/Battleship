@@ -1,7 +1,11 @@
 import "./css/styles.css";
 import bgAudio from "./assets/audio/bg.mp3";
-import { GameState } from "./Types/state.types";
+
+// sets up music button and music coordination.
 import { toggleSound } from "./Util/soundControl";
+
+// help in passing of data from one phase to another.
+import { GameState } from "./Types/state.types";
 import { handlePhaseChange } from "./Util/gamePhase";
 
 const music = new Audio(bgAudio);

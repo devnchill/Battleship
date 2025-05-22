@@ -2,7 +2,7 @@ import { BuildElement } from "../Util/buildelement";
 import { GamePhase, GameState } from "../Types/state.types";
 import handlePhaseChange from "../Util/gamePhase";
 class Phase1 {
-  public setupNameInputUi() {
+  public setupNameInputUi(): void {
     const nameLabel = new BuildElement(
       "label",
       "",
@@ -109,7 +109,7 @@ class Phase1 {
     document.body.appendChild(FOOTER.element);
   }
 
-  setupNameInputHandler() {
+  setupNameInputHandler(): void {
     const dialog = document.querySelector("dialog");
     dialog?.show();
     const form = document.querySelector("#startup-dialog-form");

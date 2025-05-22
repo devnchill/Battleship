@@ -8,8 +8,14 @@ class Ai extends Player {
     super("Chad", PlayerType.Ai);
   }
 
+  /*
+   * @returns void
+   * @param oppBoard - instance of Opponents Board
+   */
+
   makeMove(oppBoard: GameBoard): void {
     try {
+      // generate random coordinates using the utility function.
       const coor = getRandomCoord();
       oppBoard.receiveAttack(coor);
     } catch (error) {
@@ -19,4 +25,5 @@ class Ai extends Player {
     }
   }
 }
-export { Ai };
+
+export default Ai;

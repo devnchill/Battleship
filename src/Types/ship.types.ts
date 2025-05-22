@@ -1,6 +1,6 @@
 enum Orientation {
-  HORIZONTAL = "horizontal",
-  VERTICAL = "vertical",
+  HORIZONTAL = "HORIZONTAL",
+  VERTICAL = "VERTICAL",
 }
 
 type uiShipObj = {

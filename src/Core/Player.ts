@@ -1,5 +1,5 @@
 import { PlayerType } from "../Types/player.types";
-import { GameBoard } from "./GameBoard";
+import GameBoard from "./GameBoard";
 
 class Player {
   name: string;
@@ -10,7 +10,10 @@ class Player {
     this._gameBoard = new GameBoard();
   }
 
-  get gameBoard() {
+  /*
+   * @returns gameBoard
+   */
+  get gameBoard(): GameBoard {
     return this._gameBoard;
   }
 }

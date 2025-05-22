@@ -21,14 +21,25 @@ class GameBoard {
     this.ships = new Set();
   }
 
-  areAllShipsSunk() {
+  /*
+   * @returns boolean {whether all ships are sunk or not}
+   */
+  areAllShipsSunk(): boolean {
     return [...this.ships].every((ship) => ship.isSunk());
   }
 
-  get board() {
+  /*
+   * @returns board
+   */
+  get board(): ICell[][] {
     return this._board;
   }
 
+  /*
+   * @returns void
+   * @param ship - ship to be placed on the board
+   * @coor - coordinate where ship is to be placed
+   */
   placeShip(ship: Ship, coor: Coordinates): void {
     const [x, y] = coor;
     const lengthOfShip = ship.length;
@@ -63,6 +74,10 @@ class GameBoard {
     this.ships.add(ship);
   }
 
+  /*
+  @ returns void
+  @ param coor - coordinate where attack is to be done.
+  */
   receiveAttack(coor: Coordinates): void {
     validateCoordinate(coor);
     const board = this._board;
@@ -83,4 +98,4 @@ class GameBoard {
   }
 }
 
-export { GameBoard };
+export default GameBoard;

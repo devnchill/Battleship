@@ -18,7 +18,7 @@ class DomBoard {
     this.container.classList.add("board");
     for (let i = 0; i < 100; i++) {
       const cell = document.createElement(this.cellType);
-      cell.classList.add("board-cell");
+      cell.classList.add("grid-cell");
 
       const row = Math.floor(i / 10);
       const col = i % 10;

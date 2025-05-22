@@ -1,7 +1,7 @@
 import { InvalidCoordinateError, ShipOverlapError } from "../Util/error";
 import { getRandomCoord } from "../Util/random";
-import { Ai } from "./Ai";
-import { GameBoard } from "./GameBoard";
+import Ai from "./Ai";
+import GameBoard from "./GameBoard";
 import { Human } from "./Human";
 import {
   Battleship,
@@ -26,12 +26,16 @@ class GameController {
     this.init();
   }
 
-  init() {
+  //deploys both uman and ai ships , human ships deployment to be later removed
+  init(): void {
     this.deployAiShips();
     this.deployHumanShips();
   }
 
-  private deployHumanShips() {
+  /*
+  @returns void
+  */
+  private deployHumanShips(): void {
     const carrier = new Carrier();
     const battleship = new Battleship();
     const cruiser = new Cruiser();
@@ -45,6 +49,11 @@ class GameController {
     this.human.gameBoard.placeShip(destroyer, [8, 3]);
   }
 
+  /*
+   * @param ship - ship to be placed
+   * @param board - board on which ship will be placed
+   * @returns void
+   */
   private placeShipRandomly(ship: Ship, board: GameBoard): void {
     const coord = getRandomCoord();
     try {
@@ -62,7 +71,10 @@ class GameController {
     }
   }
 
-  private deployAiShips() {
+  /*
+  @returns void
+  */
+  private deployAiShips(): void {
     this.placeShipRandomly(new Carrier(), this.ai.gameBoard);
     this.placeShipRandomly(new Battleship(), this.ai.gameBoard);
     this.placeShipRandomly(new Cruiser(), this.ai.gameBoard);
@@ -70,7 +82,10 @@ class GameController {
     this.placeShipRandomly(new Destroyer(), this.ai.gameBoard);
   }
 
-  private checkWin() {
+  /*
+  @returns boolean
+  */
+  private checkWin(): boolean {
     return this.opponent.gameBoard.areAllShipsSunk();
   }
   makeMove() {
@@ -90,7 +105,10 @@ class GameController {
     this.switchTurn();
   }
 
-  switchTurn() {
+  /*
+   * @returns void
+   */
+  switchTurn(): void {
     [this.currentPlayer, this.opponent] = [this.opponent, this.currentPlayer];
   }
 }

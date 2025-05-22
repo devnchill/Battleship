@@ -11,22 +11,37 @@ class Ship {
     this._orientation = orientation;
   }
 
+  /*
+   * @returns void
+   */
   hit(): void {
     this.hitCount++;
   }
 
+  /*
+   * @returns number
+   */
   get health(): number {
     return this._length - this.hitCount;
   }
 
+  /*
+   * @returns number
+   */
   get length(): number {
     return this._length;
   }
 
+  /*
+   * @returns Orientation - determines whether ship is horizontal or vertical
+   */
   get orientation(): Orientation {
     return this._orientation;
   }
 
+  /*
+   * @returns boolean
+   */
   isSunk(): boolean {
     return this.hitCount >= this._length;
   }

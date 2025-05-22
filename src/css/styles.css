@@ -178,17 +178,17 @@ body.phase2 {
         height: 500px;
         width: 500px;
         border: 2px solid var(--oceanic-text);
-        .board-cell {
+        .grid-cell {
           flex: 0 0 10%;
           height: 10%;
           box-sizing: border-box;
           border: 1px solid var(--oceanic-text);
         }
-        .board-cell.valid {
+        .grid-cell.valid {
           outline: 4px solid green;
         }
 
-        .board-cell.invalid {
+        .grid-cell.invalid {
           outline: 4px solid red;
         }
       }

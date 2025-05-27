@@ -173,6 +173,7 @@ body.phase2 {
       justify-content: center;
       grid-area: game-board;
       .board {
+        position: relative;
         flex-wrap: wrap;
         display: flex;
         height: 500px;

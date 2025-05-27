@@ -19,15 +19,15 @@ class Phase2 {
     { name: "Submarine", length: 3 },
     { name: "Destroyer", length: 2 },
   ];
-  private activeUiShipPreview = this.buildUiShipPreview(
-    Phase2.pendingShips[0],
-  ) as HTMLDivElement;
+  private activeUiShipPreview: MaybeNull<HTMLDivElement> = null;
 
   constructor() {
     this.resetHTML();
     this.displayName(GameState.playerName);
     this.attachListenerToSpeaker();
     this.createBoard();
+    this.activeUiShipPreview = this.buildUiShipPreview(Phase2.pendingShips[0]);
+    this.rotateActiveUiShip();
     this.enableBoardInteraction();
     this.displayOrientationButton();
     this.attachListenerToOrientationButton();
@@ -116,31 +116,45 @@ class Phase2 {
   }
 
   private rotateActiveUiShip() {
+    console.log("rotateActiveUiShip method triggered");
+
+    if (!this.activeUiShipPreview) {
+      console.error("activeUiShipPreview is null in method rotateActiveUiShip");
+      return;
+    }
+    if (!this.orientationButton) {
+      console.log("orientation button not found in rotateActiveUiShip");
+      return;
+    }
     const isHorizontal: boolean =
-      this.activeUiShipPreview.dataset.orientation === Orientation.HORIZONTAL;
+      this.orientationButton.dataset.orientation === Orientation.HORIZONTAL;
     const gridCell = document.querySelector(".grid-cell") as HTMLDivElement;
     if (!gridCell) {
       console.error("Board cell not found in rotateActiveUiShip");
       return;
     }
+
+    const width = parseFloat(getComputedStyle(gridCell).width);
+    const height = parseFloat(getComputedStyle(gridCell).height);
+
+    const activeShipLength = Phase2.pendingShips[0].length;
     if (isHorizontal) {
-      // ship is horizontal , so we now need to make it vertical
-      this.activeUiShipPreview.style.width = gridCell.style.width;
-      this.activeUiShipPreview.style.height = (
-        parseFloat(gridCell.style.height) * Phase2.pendingShips[0].length
-      ).toString();
+      this.activeUiShipPreview.style.width = `${activeShipLength * width}px`;
+      this.activeUiShipPreview.style.height = `${height}px`;
     } else {
-      this.activeUiShipPreview.style.height = gridCell.style.height;
-      this.activeUiShipPreview.style.width = (
-        parseFloat(gridCell.style.width) * Phase2.pendingShips[0].length
-      ).toString();
+      this.activeUiShipPreview.style.width = `${width}px`;
+      this.activeUiShipPreview.style.height = `${activeShipLength * height}px`;
     }
+    this.activeUiShipPreview.style.display = "block";
+    this.activeUiShipPreview.style.position = "absolute";
   }
   /*
    * @returns void
    * method which would be called when changeOrientation is clicked.
    */
   private switchOrientation(): void {
+    console.log("switchOrientation method called");
+
     if (!this.orientationButton) {
       console.log("Orientation button not found", this.orientationButton);
       return;
@@ -219,29 +233,36 @@ class Phase2 {
   TODO: Retrive nexxt ship from shipQueue and repeat until shipQueue is empty
   TODO: Maybe split this task so that attachEventToGameBoard doesn't becomes too large and complicated to handle ?
   */
+
   private enableBoardInteraction(): void {
     const gameBoard = document.querySelector(".board");
-    if (!gameBoard) {
-      console.log("Gameboard not found");
+    if (!gameBoard || !this.activeUiShipPreview) {
+      console.log("Gameboard or ship preview not found");
       return;
     }
-    this.body.appendChild(this.activeUiShipPreview);
-    gameBoard?.addEventListener("mouseover", (e) => {
-      this.activeUiShipPreview.style.backgroundColor = "red";
-      // Position the ship near the mouse
-      this.activeUiShipPreview.style.left = `${e as MouseEvent}.clientX}px`;
-      this.activeUiShipPreview.style.top = `${e as MouseEvent}.clientY}px`;
-      if (!this.activeUiShipPreview) return;
+
+    const preview = this.activeUiShipPreview;
+    preview.style.backgroundColor = "red";
+    const boardContainer = document.querySelector(".board-container");
+    boardContainer?.appendChild(preview); // safer and scoped
+
+    gameBoard.addEventListener("mouseenter", () => {
+      preview.style.display = "block";
+      preview.style.position = "absolute";
     });
-    gameBoard.addEventListener("mouseenter", (e) => {
-      this.activeUiShipPreview.style.display = "block";
-      this.activeUiShipPreview.style.position = "absolute";
+
+    gameBoard.addEventListener("mouseleave", () => {
+      preview.style.display = "none";
+    });
+
+    gameBoard.addEventListener("mouseover", (e) => {
+      const relativeX = (e as MouseEvent).clientX;
+      const relativeY = (e as MouseEvent).clientY;
+
+      preview.style.left = `${relativeX}px`;
+      preview.style.top = `${relativeY}px`;
       this.showBorderColorForValidation(e as MouseEvent);
     });
-    gameBoard.addEventListener("mouseleave", () => {
-      this.activeUiShipPreview.style.display = "none";
-    });
-    //NOTE: Once ship is placed , shift shipQueue and call createUiForActiveShip method and repeat all over again.
   }
 }
 

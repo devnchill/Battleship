@@ -20,6 +20,7 @@ class Phase2 {
     { name: "Destroyer", length: 2 },
   ];
   private activeUiShipPreview: MaybeNull<HTMLDivElement> = null;
+  private music: HTMLAudioElement = new Audio(bgAudio);
 
   constructor() {
     this.resetHTML();
@@ -34,9 +35,9 @@ class Phase2 {
     //Adds Listener to be able to play/pause music by clicking the speaker
   }
 
-  /*
-   * @returns void
-   * This functions modifies some bits and pieces of phase1 to be suitable for phase2.
+  /**
+   * Prepares the HTML elements required for Phase 2 by modifying Phase 1 layout.
+   * Adds the mute/unmute button to the header.
    */
   private resetHTML(): void {
     this.body.classList.replace("phase1", "phase2");
@@ -50,31 +51,32 @@ class Phase2 {
     document.querySelector("header")?.appendChild(this.soundToggleButton);
   }
 
-  /*
-   * @returns none
-   * Adds event listener to speaker button placed at top right corner.
+  /**
+   * Adds event listener to the speaker button to toggle background music playback.
+   * Updates the speaker icon based on the mute state.
    */
   private attachListenerToSpeaker(): void {
     let isMuted = true;
-    const music = new Audio(bgAudio);
-    this.soundToggleButton?.addEventListener("click", () => {
+    if (!this.soundToggleButton) {
+      console.log(
+        "Sound toggle button not found in phase2 this.attachListenerToSpeaker()",
+      );
+      return;
+    }
+    this.soundToggleButton.addEventListener("click", () => {
       if (isMuted) {
-        music.play();
-        // unmute and use unmuted img
+        this.music.play();
       } else {
-        music.pause();
-        //mute and use muted img
+        this.music.pause();
       }
       isMuted = !isMuted;
-      (this.soundToggleButton as HTMLImageElement).src = isMuted
-        ? sound_off_img
-        : sound_on_img;
+      this.soundToggleButton.src = isMuted ? sound_off_img : sound_on_img;
     });
   }
 
-  /*
-   * @returns void
-   * Uses the name taken from phase1 and displays it in phsae2.
+  /**
+   * Displays the player's name in uppercase followed by an instruction to place ships.
+   * @param name - Player's name.
    */
   private displayName(name: string): void {
     const div = document.createElement("div");
@@ -85,9 +87,9 @@ class Phase2 {
     document.querySelector("main")?.appendChild(div);
   }
 
-  /*
-   * @returns void
-   * Uses DomBoard instance to create new board and displays it on webpage.
+  /**
+   * Uses DomBoard to create and append a player board to the main section.
+   * Throws an error if the initial board cell is not found.
    */
   private createBoard(): void {
     const boardContainer = document.createElement("div");
@@ -101,9 +103,8 @@ class Phase2 {
     }
   }
 
-  /*
-   * @returns void
-   * Button to determine orientaitno of ship(HORIZONTAL|Vertical)
+  /**
+   * Creates and displays the orientation toggle button for ship placement (X/Y axis).
    */
   private displayOrientationButton(): void {
     this.orientationButton = document.createElement("button");
@@ -115,7 +116,10 @@ class Phase2 {
       ?.appendChild(this.orientationButton);
   }
 
-  private rotateActiveUiShip() {
+  /**
+   * Adjusts the dimensions of the active UI ship preview based on its orientation.
+   */
+  private rotateActiveUiShip(): void {
     console.log("rotateActiveUiShip method triggered");
 
     if (!this.activeUiShipPreview) {
@@ -136,7 +140,6 @@ class Phase2 {
 
     const width = parseFloat(getComputedStyle(gridCell).width);
     const height = parseFloat(getComputedStyle(gridCell).height);
-
     const activeShipLength = Phase2.pendingShips[0].length;
     if (isHorizontal) {
       this.activeUiShipPreview.style.width = `${activeShipLength * width}px`;
@@ -148,13 +151,13 @@ class Phase2 {
     this.activeUiShipPreview.style.display = "block";
     this.activeUiShipPreview.style.position = "absolute";
   }
-  /*
-   * @returns void
-   * method which would be called when changeOrientation is clicked.
+
+  /**
+   * Toggles the ship orientation between HORIZONTAL and VERTICAL.
+   * Updates the UI button text and re-rotates the preview ship accordingly.
    */
   private switchOrientation(): void {
     console.log("switchOrientation method called");
-
     if (!this.orientationButton) {
       console.log("Orientation button not found", this.orientationButton);
       return;
@@ -169,9 +172,8 @@ class Phase2 {
     this.rotateActiveUiShip();
   }
 
-  /*
-   *@returns void
-   * calls changeOrientation method when orientationButton is clicked
+  /**
+   * Attaches a click listener to the orientation button to switch ship axis.
    */
   private attachListenerToOrientationButton(): void {
     this.orientationButton?.addEventListener("click", () => {
@@ -180,11 +182,10 @@ class Phase2 {
     });
   }
 
-  /*
-   * @param activeShip - ship going to be placed and atached to cursor
-   * @returns MaybeNull<HTMLDivElement>
-   * returns null if all ships are already placed
-   * returns HTMLDivElement if there is ships still left in shipQueue
+  /**
+   * Builds a visual preview element for the currently selected ship.
+   * @param activeShip - The ship to be displayed as preview.
+   * @returns A HTMLDivElement representing the UI ship preview or null if grid cell not found.
    */
   private buildUiShipPreview(activeShip: uiShipObj): MaybeNull<HTMLDivElement> {
     const currentShip = document.createElement("div");
@@ -200,6 +201,10 @@ class Phase2 {
     return currentShip;
   }
 
+  /**
+   * Removes the next ship from the pending ships queue.
+   * @returns 0 if a ship was dequeued, 1 if no ships are left.
+   */
   private dequeueNextShip(): number {
     if (Phase2.pendingShips.length <= 0) {
       return 1;
@@ -208,20 +213,121 @@ class Phase2 {
     return 0;
   }
 
-  private showBorderColorForValidation(e: MouseEvent) {
-    //boards current locaiton
-    const board = document.querySelector(".board");
-    if (!board) {
-      console.error(
-        "GameBoard not found when requiring it inside showBorderColorForValidation",
-      );
-      return;
+  /**
+   * Calculates the grid cell index (row and column) based on relative mouse position.
+   * @param relativeX - X coordinate relative to the board.
+   * @param relativeY - Y coordinate relative to the board.
+   * @returns An object containing row and col, or null if grid cell is not found.
+   */
+  private getCellIndexFromPosition(
+    relativeX: number,
+    relativeY: number,
+  ): MaybeNull<{ row: number; col: number }> {
+    const gridCell = document.querySelector(".grid-cell") as HTMLElement;
+    if (!gridCell) return null;
+    const cellWidth = gridCell.offsetWidth;
+    const cellHeight = gridCell.offsetHeight;
+    const col = Math.floor(relativeX / cellWidth);
+    const row = Math.floor(relativeY / cellHeight);
+    return { row, col };
+  }
+
+  /**
+   * Validates if a ship can be placed at the specified position with the given orientation.
+   * @param row - Starting row position.
+   * @param col - Starting column position.
+   * @param length - Length of the ship.
+   * @param orientation - Ship orientation (horizontal or vertical).
+   * @returns True if ship fits within bounds; false otherwise.
+   */
+  private canPlaceShip(
+    row: number,
+    col: number,
+    length: number,
+    orientation: Orientation,
+  ): boolean {
+    const boardSize = 10;
+    if (orientation === Orientation.HORIZONTAL) {
+      if (col + length > boardSize) return false;
+    } else {
+      if (row + length > boardSize) return false;
     }
+    // Collision detection can go here in the future
+    return true;
+  }
+
+  /**
+   * Removes all visual highlight indicators (valid/invalid) from board cells.
+   */
+  private clearHighlights(): void {
+    document.querySelectorAll(".grid-cell").forEach((cell) => {
+      cell.classList.remove("valid");
+      cell.classList.remove("invalid");
+    });
+  }
+
+  /**
+   * Highlights cells on the board to indicate whether placement is valid or invalid.
+   * @param row - Starting row index.
+   * @param col - Starting column index.
+   * @param length - Length of the ship.
+   * @param orientation - Ship orientation (horizontal or vertical).
+   * @param valid - Whether the ship placement is valid.
+   */
+  private highlightCells(
+    row: number,
+    col: number,
+    length: number,
+    orientation: Orientation,
+    valid: boolean,
+  ): void {
+    const boardSize = 10;
+    for (let i = 0; i < length; i++) {
+      const targetRow = orientation === Orientation.HORIZONTAL ? row : row + i;
+      const targetCol = orientation === Orientation.HORIZONTAL ? col + i : col;
+      if (targetRow >= boardSize || targetCol >= boardSize) continue;
+      const selector = `.grid-cell[data-x="${targetCol}"][data-y="${targetRow}"]`;
+      const cell = document.querySelector(selector);
+      if (cell) {
+        cell.classList.add(valid ? "valid" : "invalid");
+      }
+    }
+  }
+
+  /**
+   * Highlights the cells under the cursor depending on whether a ship can be validly placed.
+   * @param e - MouseEvent object from the cursor movement.
+   */
+  private showBorderColorForValidation(e: MouseEvent): void {
+    const board = document.querySelector(".board");
+    if (!board || !this.orientationButton || Phase2.pendingShips.length === 0)
+      return;
     const boardRect = board.getBoundingClientRect();
     const relativeX = e.clientX - boardRect.left;
     const relativeY = e.clientY - boardRect.top;
-    console.log("Mouse relative to board:", relativeX, relativeY);
+    const cellPos = this.getCellIndexFromPosition(relativeX, relativeY);
+    if (!cellPos) return;
+    const orientation =
+      this.orientationButton.dataset.orientation === Orientation.HORIZONTAL
+        ? Orientation.HORIZONTAL
+        : Orientation.VERTICAL;
+    const activeShip = Phase2.pendingShips[0];
+    this.clearHighlights();
+    const isValid = this.canPlaceShip(
+      cellPos.row,
+      cellPos.col,
+      activeShip.length,
+      orientation,
+    );
+    this.highlightCells(
+      cellPos.row,
+      cellPos.col,
+      activeShip.length,
+      orientation,
+      isValid,
+    );
   }
+
   /*
   *Manages listener when cursor is moved over the gameboard
   * Responsible for tasks such as 
@@ -234,13 +340,15 @@ class Phase2 {
   TODO: Maybe split this task so that attachEventToGameBoard doesn't becomes too large and complicated to handle ?
   */
 
+  /*
+   * Initializes event listeners and behavior for the game board to allow ship placement via cursor interaction.
+   */
   private enableBoardInteraction(): void {
     const gameBoard = document.querySelector(".board");
     if (!gameBoard || !this.activeUiShipPreview) {
       console.log("Gameboard or ship preview not found");
       return;
     }
-
     const preview = this.activeUiShipPreview;
     preview.style.backgroundColor = "red";
     const boardContainer = document.querySelector(".board-container");
@@ -253,12 +361,12 @@ class Phase2 {
 
     gameBoard.addEventListener("mouseleave", () => {
       preview.style.display = "none";
+      this.clearHighlights();
     });
 
     gameBoard.addEventListener("mouseover", (e) => {
       const relativeX = (e as MouseEvent).clientX;
       const relativeY = (e as MouseEvent).clientY;
-
       preview.style.left = `${relativeX}px`;
       preview.style.top = `${relativeY}px`;
       this.showBorderColorForValidation(e as MouseEvent);

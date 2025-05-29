@@ -1,4 +1,4 @@
-import { GameBoard } from "../Core/GameBoard";
+import GameBoard from "../Core/GameBoard";
 import { CellState, ICell } from "../Types/board.types";
 import { PlayerType } from "../Types/player.types";
 

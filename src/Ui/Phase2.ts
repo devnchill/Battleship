@@ -32,7 +32,6 @@ class Phase2 {
     this.enableBoardInteraction();
     this.displayOrientationButton();
     this.attachListenerToOrientationButton();
-    //Adds Listener to be able to play/pause music by clicking the speaker
   }
 
   /**
@@ -63,14 +62,16 @@ class Phase2 {
       );
       return;
     }
-    this.soundToggleButton.addEventListener("click", () => {
+    const btn = this.soundToggleButton;
+    if (!btn) return;
+    btn.addEventListener("click", () => {
       if (isMuted) {
         this.music.play();
       } else {
         this.music.pause();
       }
       isMuted = !isMuted;
-      this.soundToggleButton.src = isMuted ? sound_off_img : sound_on_img;
+      btn.src = isMuted ? sound_off_img : sound_on_img;
     });
   }
 
@@ -198,6 +199,7 @@ class Phase2 {
     const cellLength = parseFloat(getComputedStyle(gridCell).width);
     currentShip.style.width = `${activeShip.length * cellLength}px`;
     currentShip.style.height = `${cellLength}px`;
+    currentShip.style.backgroundColor = "red";
     return currentShip;
   }
 
@@ -328,31 +330,58 @@ class Phase2 {
     );
   }
 
-  /*
-  *Manages listener when cursor is moved over the gameboard
-  * Responsible for tasks such as 
-  - display uiship over board 
-  - on right click ship gets placed
-  TODO: Get mouse location on board
-  TODO: See if ship can be placed
-  TODO: Place Ship
-  TODO: Retrive nexxt ship from shipQueue and repeat until shipQueue is empty
-  TODO: Maybe split this task so that attachEventToGameBoard doesn't becomes too large and complicated to handle ?
-  */
-
-  /*
-   * Initializes event listeners and behavior for the game board to allow ship placement via cursor interaction.
+  /**
+   * Handles the placement of the currently active ship on valid highlighted cells.
+   * If placement is successful, removes the ship from the queue,
+   * creates the next ship's preview, or ends the placement phase if all ships are placed.
    */
-  private enableBoardInteraction(): void {
-    const gameBoard = document.querySelector(".board");
-    if (!gameBoard || !this.activeUiShipPreview) {
-      console.log("Gameboard or ship preview not found");
+  private placeShipOnBoard(): void {
+    const currentShip = Phase2.pendingShips[0];
+    console.log("Mouse Clicked . Placing Ship on board");
+    const clickedCell = document.querySelectorAll(".valid");
+    console.log(clickedCell);
+
+    if (clickedCell.length == 0) {
+      console.error("Valid cells not found");
       return;
     }
-    const preview = this.activeUiShipPreview;
-    preview.style.backgroundColor = "red";
-    const boardContainer = document.querySelector(".board-container");
-    boardContainer?.appendChild(preview); // safer and scoped
+    clickedCell.forEach((cell, index) => {
+      cell.classList.add("occupied");
+      (cell as HTMLDivElement).dataset["ship"] = `${currentShip.name}-${index}`;
+    });
+    this.clearHighlights();
+    if (this.dequeueNextShip() === 1) {
+      console.log("All ships placed! Proceed to Phase 3.");
+      // TODO: Transition to next phase
+      return;
+    }
+    const nextShip = Phase2.pendingShips[0];
+    if (!nextShip) {
+      console.log("No more ships to preview.");
+      this.activeUiShipPreview?.remove();
+      return;
+    }
+    if (this.activeUiShipPreview) {
+      this.activeUiShipPreview.remove();
+    }
+    const newPreview = this.buildUiShipPreview(nextShip);
+    if (newPreview) {
+      this.activeUiShipPreview = newPreview;
+      document.querySelector(".board-container")?.appendChild(newPreview);
+      this.rotateActiveUiShip();
+      this.bindPreviewToCursor(newPreview);
+    }
+  }
+
+  /**
+   * Binds a floating preview ship to the user's cursor as it moves over the board.
+   * Also updates visual feedback for valid or invalid placement in real time.
+   *
+   * @param preview - The HTMLDivElement representing the floating ship preview.
+   */
+  private bindPreviewToCursor(preview: HTMLDivElement): void {
+    const gameBoard = document.querySelector(".board");
+    if (!gameBoard) return;
 
     gameBoard.addEventListener("mouseenter", () => {
       preview.style.display = "block";
@@ -364,12 +393,34 @@ class Phase2 {
       this.clearHighlights();
     });
 
-    gameBoard.addEventListener("mouseover", (e) => {
+    gameBoard.addEventListener("mousemove", (e) => {
       const relativeX = (e as MouseEvent).clientX;
       const relativeY = (e as MouseEvent).clientY;
       preview.style.left = `${relativeX}px`;
       preview.style.top = `${relativeY}px`;
       this.showBorderColorForValidation(e as MouseEvent);
+    });
+  }
+
+  /**
+   * Initializes event listeners for the game board to support
+   * interactive ship placement via mouse movement and click.
+   */
+  private enableBoardInteraction(): void {
+    const gameBoard = document.querySelector(".board");
+    if (!gameBoard || !this.activeUiShipPreview) {
+      console.log("Gameboard or ship preview not found");
+      return;
+    }
+
+    const preview = this.activeUiShipPreview;
+    const boardContainer = document.querySelector(".board-container");
+    boardContainer?.appendChild(preview);
+
+    this.bindPreviewToCursor(preview);
+
+    gameBoard.addEventListener("click", () => {
+      this.placeShipOnBoard();
     });
   }
 }

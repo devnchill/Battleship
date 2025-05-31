@@ -3,10 +3,15 @@ import sound_off_img from "../assets/images/sound_off.svg";
 import { MaybeNull } from "../Types/common.types";
 import { PlayerType } from "../Types/player.types";
 import { Orientation, uiShipObj } from "../Types/ship.types";
-import { GameState } from "../Types/state.types";
+import { GamePhase, GameState } from "../Types/state.types";
 import { BuildElement } from "../Util/buildelement";
 import { DomBoard } from "./DOMBoard";
 import bgAudio from "../assets/audio/bg.mp3";
+import handlePhaseChange from "../Util/gamePhase";
+import submarine from "../assets/images/submarine.svg";
+import patrol from "../assets/images/patrol.svg";
+import destroyer from "../assets/images/destroyer.svg";
+import carrier from "../assets/images/carrier.svg";
 
 class Phase2 {
   private soundToggleButton: MaybeNull<HTMLImageElement> = null;
@@ -19,6 +24,13 @@ class Phase2 {
     { name: "Submarine", length: 3 },
     { name: "Destroyer", length: 2 },
   ];
+  private static shipImages: Record<string, string> = {
+    Carrier: carrier,
+    Battleship: destroyer,
+    Cruiser: destroyer,
+    Submarine: submarine,
+    Destroyer: patrol,
+  };
   private activeUiShipPreview: MaybeNull<HTMLDivElement> = null;
   private music: HTMLAudioElement = new Audio(bgAudio);
 
@@ -120,6 +132,7 @@ class Phase2 {
   /**
    * Adjusts the dimensions of the active UI ship preview based on its orientation.
    */
+
   private rotateActiveUiShip(): void {
     console.log("rotateActiveUiShip method triggered");
 
@@ -131,26 +144,30 @@ class Phase2 {
       console.log("orientation button not found in rotateActiveUiShip");
       return;
     }
-    const isHorizontal: boolean =
+    const isHorizontal =
       this.orientationButton.dataset.orientation === Orientation.HORIZONTAL;
     const gridCell = document.querySelector(".grid-cell") as HTMLDivElement;
     if (!gridCell) {
       console.error("Board cell not found in rotateActiveUiShip");
       return;
     }
-
     const width = parseFloat(getComputedStyle(gridCell).width);
     const height = parseFloat(getComputedStyle(gridCell).height);
-    const activeShipLength = Phase2.pendingShips[0].length;
+    const shipLength = Phase2.pendingShips[0].length;
+    const preview = this.activeUiShipPreview;
+    const img = preview.querySelector("img") as HTMLImageElement;
+    preview.style.position = "absolute";
+    preview.style.display = "block";
+
     if (isHorizontal) {
-      this.activeUiShipPreview.style.width = `${activeShipLength * width}px`;
-      this.activeUiShipPreview.style.height = `${height}px`;
+      preview.style.width = `${shipLength * width}px`;
+      preview.style.height = `${height}px`;
+      img.style.transform = "rotate(0deg)";
+      img.style.transformOrigin = "top left";
     } else {
-      this.activeUiShipPreview.style.width = `${width}px`;
-      this.activeUiShipPreview.style.height = `${activeShipLength * height}px`;
+      img.style.transformOrigin = "top left";
+      img.style.transform = "rotate(90deg)";
     }
-    this.activeUiShipPreview.style.display = "block";
-    this.activeUiShipPreview.style.position = "absolute";
   }
 
   /**
@@ -188,18 +205,31 @@ class Phase2 {
    * @param activeShip - The ship to be displayed as preview.
    * @returns A HTMLDivElement representing the UI ship preview or null if grid cell not found.
    */
+
   private buildUiShipPreview(activeShip: uiShipObj): MaybeNull<HTMLDivElement> {
     const currentShip = document.createElement("div");
     currentShip.classList.add("ui-ship", activeShip.name);
+
     const gridCell = document.querySelector(".grid-cell") as HTMLDivElement;
     if (!gridCell) {
       console.log("Grid cells not found", gridCell);
       return null;
     }
+
     const cellLength = parseFloat(getComputedStyle(gridCell).width);
+
     currentShip.style.width = `${activeShip.length * cellLength}px`;
     currentShip.style.height = `${cellLength}px`;
-    currentShip.style.backgroundColor = "red";
+    currentShip.style.position = "absolute";
+    currentShip.style.display = "block";
+
+    // Use ship image from map
+    const img = document.createElement("img");
+    img.src = Phase2.shipImages[activeShip.name];
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "cover"; // or "cover" depending on style
+    currentShip.appendChild(img);
     return currentShip;
   }
 
@@ -353,6 +383,7 @@ class Phase2 {
     if (this.dequeueNextShip() === 1) {
       console.log("All ships placed! Proceed to Phase 3.");
       // TODO: Transition to next phase
+      handlePhaseChange(GamePhase.Battle);
       return;
     }
     const nextShip = Phase2.pendingShips[0];
@@ -394,8 +425,8 @@ class Phase2 {
     });
 
     gameBoard.addEventListener("mousemove", (e) => {
-      const relativeX = (e as MouseEvent).clientX;
-      const relativeY = (e as MouseEvent).clientY;
+      const relativeX = (e as MouseEvent).clientX + 10;
+      const relativeY = (e as MouseEvent).clientY + 10;
       preview.style.left = `${relativeX}px`;
       preview.style.top = `${relativeY}px`;
       this.showBorderColorForValidation(e as MouseEvent);

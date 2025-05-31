@@ -20,6 +20,7 @@ function handlePhaseChange(phase: GamePhase) {
       break;
     }
     case GamePhase.Battle:
+      document.body.innerHTML = "";
       break;
   }
 }

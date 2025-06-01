@@ -279,12 +279,25 @@ class Phase2 {
     orientation: Orientation,
   ): boolean {
     const boardSize = 10;
+
+    // Boundary check
     if (orientation === Orientation.HORIZONTAL) {
       if (col + length > boardSize) return false;
     } else {
       if (row + length > boardSize) return false;
     }
-    // Collision detection can go here in the future
+
+    // Collision check
+    for (let i = 0; i < length; i++) {
+      const targetRow = orientation === Orientation.HORIZONTAL ? row : row + i;
+      const targetCol = orientation === Orientation.HORIZONTAL ? col + i : col;
+      const selector = `.grid-cell[data-x="${targetCol}"][data-y="${targetRow}"]`;
+      const cell = document.querySelector(selector);
+      if (cell?.classList.contains("occupied")) {
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -365,36 +378,64 @@ class Phase2 {
    * If placement is successful, removes the ship from the queue,
    * creates the next ship's preview, or ends the placement phase if all ships are placed.
    */
+
   private placeShipOnBoard(): void {
     const currentShip = Phase2.pendingShips[0];
-    console.log("Mouse Clicked . Placing Ship on board");
-    const clickedCell = document.querySelectorAll(".valid");
-    console.log(clickedCell);
-
-    if (clickedCell.length == 0) {
+    const validCells = Array.from(
+      document.querySelectorAll(".valid"),
+    ) as HTMLDivElement[];
+    if (validCells.length === 0) {
       console.error("Valid cells not found");
       return;
     }
-    clickedCell.forEach((cell, index) => {
+    // Mark cells as occupied
+    validCells.forEach((cell, index) => {
       cell.classList.add("occupied");
-      (cell as HTMLDivElement).dataset["ship"] = `${currentShip.name}-${index}`;
+      cell.dataset["ship"] = `${currentShip.name}-${index}`;
     });
+
+    // Append single ship SVG over these valid cells
+    const firstCell = validCells[0];
+    const board = document.querySelector(".board") as HTMLElement;
+    const boardRect = board.getBoundingClientRect();
+    const cellRect = firstCell.getBoundingClientRect();
+    const cellSize = firstCell.offsetWidth;
+    const shipDiv = document.createElement("div");
+    shipDiv.classList.add("placed-ship");
+    shipDiv.style.position = "absolute";
+    shipDiv.style.left = `${cellRect.left - boardRect.left}px`;
+    shipDiv.style.top = `${cellRect.top - boardRect.top}px`;
+    shipDiv.style.width = `${cellSize * validCells.length}px`;
+    shipDiv.style.height = `${cellSize}px`;
+    shipDiv.style.pointerEvents = "none";
+    const img = document.createElement("img");
+    img.style.pointerEvents = "none";
+    img.src = Phase2.shipImages[currentShip.name];
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "cover";
+    // Rotate if vertical
+    const isVertical =
+      this.orientationButton?.dataset.orientation === Orientation.VERTICAL;
+    if (isVertical) {
+      shipDiv.style.transform = "rotate(90deg)";
+      shipDiv.style.transformOrigin = "top left";
+      shipDiv.style.left = `${cellRect.left - boardRect.left + cellSize}px`;
+    }
+    shipDiv.appendChild(img);
+    board.appendChild(shipDiv);
     this.clearHighlights();
     if (this.dequeueNextShip() === 1) {
       console.log("All ships placed! Proceed to Phase 3.");
-      // TODO: Transition to next phase
       handlePhaseChange(GamePhase.Battle);
       return;
     }
     const nextShip = Phase2.pendingShips[0];
     if (!nextShip) {
-      console.log("No more ships to preview.");
       this.activeUiShipPreview?.remove();
       return;
     }
-    if (this.activeUiShipPreview) {
-      this.activeUiShipPreview.remove();
-    }
+    this.activeUiShipPreview?.remove();
     const newPreview = this.buildUiShipPreview(nextShip);
     if (newPreview) {
       this.activeUiShipPreview = newPreview;
@@ -450,7 +491,7 @@ class Phase2 {
 
     this.bindPreviewToCursor(preview);
 
-    gameBoard.addEventListener("click", () => {
+    gameBoard.addEventListener("click", (e) => {
       this.placeShipOnBoard();
     });
   }

@@ -20,6 +20,7 @@ function handlePhaseChange(phase: GamePhase) {
       break;
     }
     case GamePhase.Battle:
+      console.log("Phase3 Initiated");
       document.body.innerHTML = "";
       break;
   }

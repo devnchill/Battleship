@@ -238,10 +238,10 @@ class Phase2 {
    * @returns 0 if a ship was dequeued, 1 if no ships are left.
    */
   private dequeueNextShip(): number {
+    Phase2.pendingShips.shift();
     if (Phase2.pendingShips.length <= 0) {
       return 1;
     }
-    Phase2.pendingShips.shift();
     return 0;
   }
 
@@ -425,6 +425,7 @@ class Phase2 {
     shipDiv.appendChild(img);
     board.appendChild(shipDiv);
     this.clearHighlights();
+    console.log("Ship queue before dequeue:", Phase2.pendingShips.length);
     if (this.dequeueNextShip() === 1) {
       console.log("All ships placed! Proceed to Phase 3.");
       handlePhaseChange(GamePhase.Battle);

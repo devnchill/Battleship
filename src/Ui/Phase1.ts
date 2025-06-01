@@ -9,7 +9,7 @@ class Phase1 {
       "",
       "",
       [],
-      "ENTER YOUR NAME:",
+      "ENTER YOUR NAME CAPTAIN:",
       "",
     );
     nameLabel.element.setAttribute("for", "name-input");
@@ -42,7 +42,7 @@ class Phase1 {
       "",
       "submit-name-button",
       ["submit-button"],
-      "Start",
+      "START",
       "submit",
     );
 

@@ -208,7 +208,7 @@ class Phase2 {
 
   private buildUiShipPreview(activeShip: uiShipObj): MaybeNull<HTMLDivElement> {
     const currentShip = document.createElement("div");
-    currentShip.classList.add("ui-ship", activeShip.name);
+    currentShip.classList.add("active-ui-ship", activeShip.name);
 
     const gridCell = document.querySelector(".grid-cell") as HTMLDivElement;
     if (!gridCell) {
@@ -226,6 +226,7 @@ class Phase2 {
     // Use ship image from map
     const img = document.createElement("img");
     img.src = Phase2.shipImages[activeShip.name];
+    img.classList.add("active-ui-ship-svg");
     img.style.width = "100%";
     img.style.height = "100%";
     img.style.objectFit = "cover"; // or "cover" depending on style
@@ -414,6 +415,7 @@ class Phase2 {
     img.style.width = "100%";
     img.style.height = "100%";
     img.style.objectFit = "cover";
+    img.classList.add("placed-ship-svg");
     // Rotate if vertical
     const isVertical =
       this.orientationButton?.dataset.orientation === Orientation.VERTICAL;

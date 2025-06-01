@@ -1,6 +1,7 @@
 import { GamePhase } from "../Types/state.types";
 import Phase1 from "../Ui/Phase1";
 import Phase2 from "../Ui/Phase2";
+import Phase3 from "../Ui/Phase3";
 
 // Handle phase-specific UI updates
 function handlePhaseChange(phase: GamePhase) {
@@ -16,13 +17,13 @@ function handlePhaseChange(phase: GamePhase) {
       //initialize phase 2.
       const phase2 = new Phase2();
       console.log("Phase 2 initialized", phase2);
-
       break;
     }
-    case GamePhase.Battle:
-      console.log("Phase3 Initiated");
-      document.body.innerHTML = "";
+    case GamePhase.Battle: {
+      const phase3 = new Phase3();
+      console.log("Phase3 Initiated", phase3);
       break;
+    }
   }
 }
 export default handlePhaseChange;

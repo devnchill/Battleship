@@ -1,12 +1,16 @@
+import { PlayerType } from "../Types/player.types";
 import { GameState } from "../Types/state.types";
+import { DomBoard } from "./DOMBoard";
 
 class Phase3 {
+  private preview: HTMLDivElement = document.createElement("div");
   constructor() {
     document.body.innerHTML = "";
     document.body.classList.remove("phase2");
     document.body.classList.add("phase3");
     console.log(GameState.playerShips);
     this.setupHtml();
+    this.buildPreviewBoard();
   }
   setupHtml(): void {
     const header = document.createElement("header");
@@ -14,8 +18,10 @@ class Phase3 {
     h.textContent = "BATTLESHIP";
     header.appendChild(h);
     const main = document.createElement("main");
-    const preview = document.createElement("div");
-    preview.classList.add("preview");
+    this.preview.classList.add("preview");
+    const yourName = document.createElement("p");
+    yourName.textContent = "Your Board";
+    this.preview.appendChild(yourName);
     const playGround = document.createElement("div");
     playGround.classList.add("play-ground");
     const helpMenu = document.createElement("div");
@@ -30,7 +36,7 @@ class Phase3 {
 `;
     helpMenu.classList.add("help-menu");
     main.appendChild(helpMenu);
-    main.appendChild(preview);
+    main.appendChild(this.preview);
     main.appendChild(playGround);
     const footer = document.createElement("footer");
     footer.innerHTML = "&copy; DevNChill";
@@ -54,9 +60,13 @@ class Phase3 {
     path.setAttribute("fill", "#24292f");
     svg.appendChild(path);
     if (githubLink) githubLink.appendChild(svg);
-    githubLink.appendChild(svg);
     footer?.appendChild(githubLink);
     document.body.appendChild(footer);
+  }
+  buildPreviewBoard(): void {
+    const board = new DomBoard(PlayerType.Ai);
+    const previewBoard = board.createBoard();
+    this.preview.appendChild(previewBoard);
   }
 }
 export default Phase3;

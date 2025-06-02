@@ -1,4 +1,4 @@
-import { GameBoard } from "../src/Core/GameBoard";
+import GameBoard from "../src/Core/GameBoard";
 import { Ship } from "../src/Core/Ship";
 import { CellState } from "../src/Types/board.types";
 import { Orientation } from "../src/Types/ship.types";

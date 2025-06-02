@@ -1,12 +1,11 @@
+import { GameState } from "../Types/state.types";
+
 class Phase3 {
   constructor() {
-    this.logHello();
     document.body.innerHTML = "";
     document.body.classList.remove("phase2");
     document.body.classList.add("phase3");
-  }
-  logHello(): void {
-    console.log("hello");
+    console.log(GameState.playerShips);
   }
 }
 export default Phase3;

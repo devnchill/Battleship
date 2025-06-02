@@ -1,7 +1,7 @@
 import { Player } from "./Player";
 import { PlayerType } from "../Types/player.types";
 import { getRandomCoord } from "../Util/random";
-import { GameBoard } from "./GameBoard";
+import GameBoard from "./GameBoard";
 
 class Ai extends Player {
   constructor() {

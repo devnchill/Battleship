@@ -2,7 +2,7 @@ import sound_on_img from "../assets/images/sound_on.svg";
 import sound_off_img from "../assets/images/sound_off.svg";
 import { MaybeNull } from "../Types/common.types";
 import { PlayerType } from "../Types/player.types";
-import { Orientation, uiShipObj } from "../Types/ship.types";
+import { Orientation, uiShipObj, shipType } from "../Types/ship.types";
 import { GamePhase, GameState } from "../Types/state.types";
 import { BuildElement } from "../Util/buildelement";
 import { DomBoard } from "./DOMBoard";
@@ -389,11 +389,23 @@ class Phase2 {
       console.error("Valid cells not found");
       return;
     }
+    const placeCoords: [number, number][] = [];
     // Mark cells as occupied
     validCells.forEach((cell, index) => {
       cell.classList.add("occupied");
       cell.dataset["ship"] = `${currentShip.name}-${index}`;
+      const xStr = cell.dataset["x"];
+      const yStr = cell.dataset["y"];
+      if (!xStr || !yStr) {
+        console.error("Missing data-x or data-y attribute on cell", cell);
+        return;
+      }
+      const x = parseInt(xStr, 10);
+      const y = parseInt(yStr, 10);
+      placeCoords.push([x, y]);
     });
+    GameState.playerShips[shipType[currentShip.name as keyof typeof shipType]] =
+      placeCoords;
 
     // Append single ship SVG over these valid cells
     const firstCell = validCells[0];
@@ -494,7 +506,7 @@ class Phase2 {
 
     this.bindPreviewToCursor(preview);
 
-    gameBoard.addEventListener("click", (e) => {
+    gameBoard.addEventListener("click", () => {
       this.placeShipOnBoard();
     });
   }

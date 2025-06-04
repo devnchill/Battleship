@@ -5,14 +5,14 @@ import { DomBoard } from "./DOMBoard";
 class Phase3 {
   private preview: HTMLDivElement = document.createElement("div");
   constructor() {
-    document.body.innerHTML = "";
-    document.body.classList.remove("phase2");
-    document.body.classList.add("phase3");
     console.log(GameState.playerShips);
     this.setupHtml();
     this.buildPreviewBoard();
   }
   setupHtml(): void {
+    document.body.innerHTML = "";
+    document.body.classList.remove("phase2");
+    document.body.classList.add("phase3");
     const header = document.createElement("header");
     const h = document.createElement("h1");
     h.textContent = "BATTLESHIP";
@@ -64,7 +64,7 @@ class Phase3 {
     document.body.appendChild(footer);
   }
   buildPreviewBoard(): void {
-    const board = new DomBoard(PlayerType.Ai);
+    const board = new DomBoard(PlayerType.Human);
     const previewBoard = board.createBoard();
     this.preview.appendChild(previewBoard);
   }

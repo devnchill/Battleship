@@ -1,3 +1,4 @@
+import { GameState } from "../Types/state.types";
 import { InvalidCoordinateError, ShipOverlapError } from "../Util/error";
 import { getRandomCoord } from "../Util/random";
 import Ai from "./Ai";
@@ -18,8 +19,8 @@ class GameController {
   currentPlayer: Human | Ai;
   opponent: Human | Ai;
 
-  constructor(name: string) {
-    this.human = new Human(name);
+  constructor() {
+    this.human = new Human(GameState.playerName);
     this.ai = new Ai();
     this.currentPlayer = this.human;
     this.opponent = this.ai;
@@ -36,17 +37,30 @@ class GameController {
   @returns void
   */
   private deployHumanShips(): void {
-    const carrier = new Carrier();
-    const battleship = new Battleship();
-    const cruiser = new Cruiser();
-    const submarine = new Submarine();
-    const destroyer = new Destroyer();
-    //HACK: ask player to drag and drop ships later , for now pass coordinates directly in arguments....
-    this.human.gameBoard.placeShip(carrier, [0, 0]);
-    this.human.gameBoard.placeShip(battleship, [1, 3]);
-    this.human.gameBoard.placeShip(cruiser, [2, 3]);
-    this.human.gameBoard.placeShip(submarine, [5, 3]);
-    this.human.gameBoard.placeShip(destroyer, [8, 3]);
+    for (const shipInfo of GameState.playerShips) {
+      let shipInstance: Ship;
+      switch (shipInfo.name) {
+        case "Carrier":
+          shipInstance = new Carrier();
+          break;
+        case "Battleship":
+          shipInstance = new Battleship();
+          break;
+        case "Cruiser":
+          shipInstance = new Cruiser();
+          break;
+        case "Submarine":
+          shipInstance = new Submarine();
+          break;
+        case "Destroyer":
+          shipInstance = new Destroyer();
+          break;
+        default:
+          throw new Error(`Unknown ship type: ${shipInfo.name}`);
+      }
+      shipInstance.orientation = shipInfo.orientation;
+      this.human.gameBoard.placeShip(shipInstance, shipInfo.position);
+    }
   }
 
   /*

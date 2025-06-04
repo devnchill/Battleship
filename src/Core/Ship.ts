@@ -39,6 +39,10 @@ class Ship {
     return this._orientation;
   }
 
+  set orientation(param: Orientation) {
+    this._orientation = param;
+  }
+
   /*
    * @returns boolean
    */

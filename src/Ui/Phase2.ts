@@ -32,13 +32,15 @@ class Phase2 {
     Destroyer: patrol,
   };
   private activeUiShipPreview: MaybeNull<HTMLDivElement> = null;
-  private music: HTMLAudioElement = new Audio(bgAudio);
+  private static music: HTMLAudioElement = new Audio(bgAudio);
+  private static gameBoard: MaybeNull<HTMLDivElement>;
 
   constructor() {
     this.resetHTML();
     this.displayName(GameState.playerName);
     this.attachListenerToSpeaker();
     this.createBoard();
+    Phase2.gameBoard = document.querySelector(".board");
     this.activeUiShipPreview = this.buildUiShipPreview(Phase2.pendingShips[0]);
     this.rotateActiveUiShip();
     this.enableBoardInteraction();
@@ -78,9 +80,9 @@ class Phase2 {
     if (!btn) return;
     btn.addEventListener("click", () => {
       if (isMuted) {
-        this.music.play();
+        Phase2.music.play();
       } else {
-        this.music.pause();
+        Phase2.music.pause();
       }
       isMuted = !isMuted;
       btn.src = isMuted ? sound_off_img : sound_on_img;
@@ -215,9 +217,7 @@ class Phase2 {
       console.log("Grid cells not found", gridCell);
       return null;
     }
-
     const cellLength = parseFloat(getComputedStyle(gridCell).width);
-
     currentShip.style.width = `${activeShip.length * cellLength}px`;
     currentShip.style.height = `${cellLength}px`;
     currentShip.style.position = "absolute";
@@ -345,10 +345,13 @@ class Phase2 {
    * @param e - MouseEvent object from the cursor movement.
    */
   private showBorderColorForValidation(e: MouseEvent): void {
-    const board = document.querySelector(".board");
-    if (!board || !this.orientationButton || Phase2.pendingShips.length === 0)
+    if (
+      !Phase2.gameBoard ||
+      !this.orientationButton ||
+      Phase2.pendingShips.length === 0
+    )
       return;
-    const boardRect = board.getBoundingClientRect();
+    const boardRect = Phase2.gameBoard.getBoundingClientRect();
     const relativeX = e.clientX - boardRect.left;
     const relativeY = e.clientY - boardRect.top;
     const cellPos = this.getCellIndexFromPosition(relativeX, relativeY);
@@ -382,6 +385,8 @@ class Phase2 {
 
   private placeShipOnBoard(): void {
     const currentShip = Phase2.pendingShips[0];
+    const isVertical =
+      this.orientationButton?.dataset.orientation === Orientation.VERTICAL;
     const validCells = Array.from(
       document.querySelectorAll(".valid"),
     ) as HTMLDivElement[];
@@ -389,28 +394,36 @@ class Phase2 {
       console.error("Valid cells not found");
       return;
     }
-    const placeCoords: [number, number][] = [];
     // Mark cells as occupied
     validCells.forEach((cell, index) => {
       cell.classList.add("occupied");
       cell.dataset["ship"] = `${currentShip.name}-${index}`;
-      const xStr = cell.dataset["x"];
-      const yStr = cell.dataset["y"];
-      if (!xStr || !yStr) {
-        console.error("Missing data-x or data-y attribute on cell", cell);
-        return;
-      }
-      const x = parseInt(xStr, 10);
-      const y = parseInt(yStr, 10);
-      placeCoords.push([x, y]);
     });
-    GameState.playerShips[shipType[currentShip.name as keyof typeof shipType]] =
-      placeCoords;
+    const firstCell = validCells[0];
+    const xStr = firstCell.dataset["x"];
+    const yStr = firstCell.dataset["y"];
+    if (!xStr || !yStr) {
+      console.error(
+        "Missing data-x or data-y attribute on first valid cell",
+        firstCell,
+      );
+      return;
+    }
+    const x = parseInt(xStr, 10);
+    const y = parseInt(yStr, 10);
+    GameState.playerShips.push({
+      position: [x, y],
+      orientation: isVertical ? Orientation.VERTICAL : Orientation.HORIZONTAL,
+      name: shipType[currentShip.name as keyof typeof shipType],
+      length: currentShip.length,
+    });
 
     // Append single ship SVG over these valid cells
-    const firstCell = validCells[0];
-    const board = document.querySelector(".board") as HTMLElement;
-    const boardRect = board.getBoundingClientRect();
+    if (!Phase2.gameBoard) {
+      console.log("Phase 2 bord not found in placeShipOnBoard method");
+      return;
+    }
+    const boardRect = Phase2.gameBoard.getBoundingClientRect();
     const cellRect = firstCell.getBoundingClientRect();
     const cellSize = firstCell.offsetWidth;
     const shipDiv = document.createElement("div");
@@ -429,15 +442,13 @@ class Phase2 {
     img.style.objectFit = "cover";
     img.classList.add("placed-ship-svg");
     // Rotate if vertical
-    const isVertical =
-      this.orientationButton?.dataset.orientation === Orientation.VERTICAL;
     if (isVertical) {
       shipDiv.style.transform = "rotate(90deg)";
       shipDiv.style.transformOrigin = "top left";
       shipDiv.style.left = `${cellRect.left - boardRect.left + cellSize}px`;
     }
     shipDiv.appendChild(img);
-    board.appendChild(shipDiv);
+    Phase2.gameBoard.appendChild(shipDiv);
     this.clearHighlights();
     console.log("Ship queue before dequeue:", Phase2.pendingShips.length);
     if (this.dequeueNextShip() === 1) {
@@ -467,20 +478,19 @@ class Phase2 {
    * @param preview - The HTMLDivElement representing the floating ship preview.
    */
   private bindPreviewToCursor(preview: HTMLDivElement): void {
-    const gameBoard = document.querySelector(".board");
-    if (!gameBoard) return;
+    if (!Phase2.gameBoard) return;
 
-    gameBoard.addEventListener("mouseenter", () => {
+    Phase2.gameBoard.addEventListener("mouseenter", () => {
       preview.style.display = "block";
       preview.style.position = "absolute";
     });
 
-    gameBoard.addEventListener("mouseleave", () => {
+    Phase2.gameBoard.addEventListener("mouseleave", () => {
       preview.style.display = "none";
       this.clearHighlights();
     });
 
-    gameBoard.addEventListener("mousemove", (e) => {
+    Phase2.gameBoard.addEventListener("mousemove", (e) => {
       const relativeX = (e as MouseEvent).clientX + 10;
       const relativeY = (e as MouseEvent).clientY + 10;
       preview.style.left = `${relativeX}px`;
@@ -494,8 +504,8 @@ class Phase2 {
    * interactive ship placement via mouse movement and click.
    */
   private enableBoardInteraction(): void {
-    const gameBoard = document.querySelector(".board");
-    if (!gameBoard || !this.activeUiShipPreview) {
+    console.log(Phase2.gameBoard);
+    if (!Phase2.gameBoard || !this.activeUiShipPreview) {
       console.log("Gameboard or ship preview not found");
       return;
     }
@@ -506,7 +516,7 @@ class Phase2 {
 
     this.bindPreviewToCursor(preview);
 
-    gameBoard.addEventListener("click", () => {
+    Phase2.gameBoard.addEventListener("click", () => {
       this.placeShipOnBoard();
     });
   }
